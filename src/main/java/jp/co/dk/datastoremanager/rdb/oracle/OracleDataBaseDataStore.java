@@ -57,7 +57,7 @@ class OracleTableMetaData extends TableMetaData {
 	
 	@Override
 	public boolean dropHistoryTable() throws DataStoreManagerException {
-		if (this.isExistsHistoryTable()) return false;
+		if (!this.isExistsHistoryTable()) return false;
 		Sql sql = new Sql("DROP TABLE ").add(this.getHistoryTableName());
 		this.transaction.dropTable(sql);
 		return true;

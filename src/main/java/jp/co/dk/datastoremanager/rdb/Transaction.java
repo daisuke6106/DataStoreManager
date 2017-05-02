@@ -7,7 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jp.co.dk.datastoremanager.DataBaseDriverConstants;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
@@ -303,7 +305,7 @@ public class Transaction {
 	 * @throws DataStoreManagerException テーブル情報の取得に失敗した場合
 	 */
 	public List<String> getAllTableName() throws DataStoreManagerException {
-		return this.getTableName("%");
+		return this.getTableName("%").stream().filter(N -> !N.startsWith(TableMetaData.HISTRY_TABLE_NAME_HEADER)).collect(Collectors.toList());
 	}
 	
 	/**

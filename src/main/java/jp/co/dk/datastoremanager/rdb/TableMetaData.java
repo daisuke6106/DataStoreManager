@@ -12,6 +12,8 @@ import static jp.co.dk.datastoremanager.message.DataStoreExporterMessage.*;
 
 public abstract class TableMetaData {
 	
+	protected static final String HISTRY_TABLE_NAME_HEADER = "H$";
+	
 	protected Transaction transaction;
 	
 	protected String schemaName;
@@ -37,7 +39,7 @@ public abstract class TableMetaData {
 	}
 	
 	protected String getHistoryTableName() {
-		return "H$" + this.tableName;
+		return HISTRY_TABLE_NAME_HEADER + this.tableName;
 	}
 	
 	public abstract boolean isExistsHistoryTable() throws DataStoreManagerException;

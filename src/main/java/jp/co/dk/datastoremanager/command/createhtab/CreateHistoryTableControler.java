@@ -29,11 +29,36 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 			
 			if (this.cmd.hasOption("i")) {
 				for (TableMetaData tableMetaData : tableMetaDataList) {
-					System.out.print(tableMetaData);
 					if (tableMetaData.isExistsHistoryTable()) {
-						System.out.println(" is exists.");
+						System.out.println(tableMetaData.toString() + " : history table is exists.");
 					} else {
-						System.out.println(" is not exists.");
+						System.out.println(tableMetaData.toString() + " : history table is not exists.");
+					}
+				}
+			} else if (this.cmd.hasOption("c")) {
+				for (TableMetaData tableMetaData : tableMetaDataList) {
+					if (tableMetaData.createHistoryTable()) {
+						System.out.println(tableMetaData.toString() + " : history table create complete!");
+					} else {
+						System.out.println(tableMetaData.toString() + " : history table is exists.");
+					}
+					if (tableMetaData.createTriggerHistoryTable()) {
+						System.out.println(tableMetaData.toString() + " : trigger for history table create complete!");
+					} else {
+						System.out.println(tableMetaData.toString() + " : trigger for history table is exists.");
+					}
+				}
+			} else if (this.cmd.hasOption("d")) {
+				for (TableMetaData tableMetaData : tableMetaDataList) {
+					if (tableMetaData.dropHistoryTrigger()) {
+						System.out.println(tableMetaData.toString() + " : trigger for history table delete complete!");
+					} else {
+						System.out.println(tableMetaData.toString() + " : trigger for history table is not exists.");
+					}
+					if (tableMetaData.dropHistoryTable()) {
+						System.out.println(tableMetaData.toString() + " : history table delete complete!");
+					} else {
+						System.out.println(tableMetaData.toString() + " : history table is not exists.");
 					}
 				}
 			}
@@ -59,7 +84,7 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースパスワード").withLongOpt("password").create("pass"));
 		
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルの状態を確認する")	.withLongOpt("info" ).create("i"));
-		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを作成する").withLongOpt("create").create("o"));
+		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを作成する").withLongOpt("create").create("c"));
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを削除する").withLongOpt("drop").create("d"));
 		
 		options.addOption(OptionBuilder.isRequired(false).hasArg(true ).withArgName("tablename").withDescription("対象のテーブル名").withLongOpt("tablename").create("t"));

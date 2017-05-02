@@ -305,24 +305,7 @@ public class Transaction {
 	 * @throws DataStoreManagerException テーブル情報の取得に失敗した場合
 	 */
 	public List<String> getAllTableName() throws DataStoreManagerException {
-		return this.getTableName("%").stream().filter(N -> !N.startsWith(TableMetaData.HISTRY_TABLE_NAME_HEADER)).collect(Collectors.toList());
-	}
-	
-	/**
-	 * このトランザクションが接続できるテーブルの一覧をメタデータとして取得する。<p/>
-	 * 取得できなかった場合、空のリストを返却する。
-	 * 
-	 * @return テーブル一覧 
-	 * @throws DataStoreManagerException テーブル情報の取得に失敗した場合
-	 */
-	List<TableMetaData> getTables() throws DataStoreManagerException {
-		List<TableMetaData> tableMetaDataList = new ArrayList<>();
-		List<String> tableNames = this.getAllTableName();
-		String schema = this.dataBaseAccessParameter.getUser().toUpperCase();
-		for (String tableName : tableNames) {
-			tableMetaDataList.add(this.createTableMetaData(this, schema, tableName));
-		}
-		return tableMetaDataList;
+		return this.getTableName("%");
 	}
 	
 	protected List<String> getTableName(String tableName) throws DataStoreManagerException {
@@ -338,36 +321,6 @@ public class Transaction {
 		}
 	}
 	
-	protected TableMetaData createTableMetaData(Transaction transaction, String schma, String tableName) {
-		return new TableMetaData(transaction, schma, tableName){
-
-			@Override
-			public boolean isExistsHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-			
-			@Override
-			public boolean createHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-
-			@Override
-			public boolean dropHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);				
-			}
-
-			@Override
-			public boolean createTriggerHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-
-			@Override
-			public boolean dropHistoryTrigger() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);				
-			}
-			
-		};
-	}
 	
 	/**
 	 * このトランザクションに対してクローズを実施します。

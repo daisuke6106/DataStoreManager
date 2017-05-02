@@ -22,7 +22,7 @@ public class OracleTransactionTest extends DataStoreManagerTestFoundation{
 	
 	@Test
 	public void createTableMetaData() throws DataStoreManagerException {
-		List<TableMetaData> tableMetaDataList = this.target.getTable();
+		List<TableMetaData> tableMetaDataList = this.target.getTables();
 		for (TableMetaData tableMetaData : tableMetaDataList) {
 			assertEquals((tableMetaData instanceof OracleTableMetaData), true);
 		}

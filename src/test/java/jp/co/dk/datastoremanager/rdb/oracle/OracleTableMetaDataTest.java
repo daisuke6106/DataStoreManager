@@ -1,6 +1,5 @@
 package jp.co.dk.datastoremanager.rdb.oracle;
 
-import static org.junit.Assert.*;
 import jp.co.dk.datastoremanager.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 
@@ -15,15 +14,13 @@ public class OracleTableMetaDataTest extends DataStoreManagerTestFoundation{
  	public void init() throws DataStoreManagerException {
 		OracleDataBaseDataStore dbs = new OracleDataBaseDataStore(this.getAccessableDataBaseAccessParameterORACLE());
 		dbs.startTransaction();
-		target = (OracleTableMetaData)dbs.getTable("EMP");
+		this.target = (OracleTableMetaData)dbs.getTable("EMP");
+		this.target.createHistoryTable();
+		this.target.createTriggerHistoryTable();
 	}
 	
 	@Test
-	public void createTableMetaData() throws DataStoreManagerException {
-		this.target.createHistoryTable();
-		this.target.createTriggerHistoryTable();
-		this.target.dropHistoryTrigger();
-		this.target.dropHistoryTable();
+	public void getHistoryTable() throws DataStoreManagerException {
+		this.target.getHistoryTable();
 	}
-	
 }

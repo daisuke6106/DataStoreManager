@@ -4,6 +4,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
+
+import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;
+
 /**
  * カラムに付随するメタデータを表すクラスです。
  * カラムが所属するデータベース名、カラム名、カラムサイズ、カラムタイプなどを保持します。
@@ -31,6 +35,9 @@ public class ColumnMetaData {
 	/** カラムタイプ */
 	protected String columnType;
 	
+	/** カラムタイプ（数値） */
+	protected int columnIntType;
+	
 	/** コメント */
 	protected String remarks;
 	
@@ -50,6 +57,7 @@ public class ColumnMetaData {
 		this.remarks      = metaData.getColumnLabel(index);
 		this.size         = metaData.getColumnDisplaySize(index);
 		this.columnType   = metaData.getColumnTypeName(index);
+		this.columnIntType= metaData.getColumnType(index);
 	}
 	
 	protected ColumnMetaData(ResultSet resultSet, int index) throws SQLException {
@@ -60,6 +68,8 @@ public class ColumnMetaData {
 		this.remarks      = resultSet.getString("REMARKS");
 		this.size         = resultSet.getInt("COLUMN_SIZE");
 		this.columnType   = resultSet.getString("TYPE_NAME");
+		this.columnIntType= resultSet.getInt("DATA_TYPE");
+		
 	}
 	
 	/**
@@ -102,6 +112,85 @@ public class ColumnMetaData {
 		return columnType;
 	}
 
+	public Object getData(DataBaseRecord record) throws DataStoreManagerException {
+		switch (columnIntType) {
+			case java.sql.Types.ARRAY:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.BIGINT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.BINARY:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.BIT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.BLOB:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.BOOLEAN:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.CHAR:
+				return record.getString(columnname);
+			case java.sql.Types.CLOB:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.DATALINK:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.DATE:
+				return record.getDate(columnname);
+			case java.sql.Types.DECIMAL:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.DISTINCT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.DOUBLE:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.FLOAT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.INTEGER:
+				return new Integer(record.getInt(columnname));
+			case java.sql.Types.JAVA_OBJECT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.LONGNVARCHAR:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.LONGVARBINARY:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.LONGVARCHAR:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.NCHAR:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.NCLOB:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.NULL:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.NUMERIC:
+				return new Integer(record.getInt(columnname));
+			case java.sql.Types.NVARCHAR:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.OTHER:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.REAL:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.REF:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.ROWID:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.SMALLINT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.SQLXML:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.STRUCT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.TIME:
+				return record.getDate(columnname);
+			case java.sql.Types.TIMESTAMP:
+				return record.getDate(columnname);
+			case java.sql.Types.TINYINT:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.VARBINARY:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			case java.sql.Types.VARCHAR:
+				return record.getString(columnname);
+			default:
+				throw new DataStoreManagerException(NOT_SUPPORT);
+		}
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

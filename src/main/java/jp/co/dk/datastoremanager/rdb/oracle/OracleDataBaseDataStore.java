@@ -1,12 +1,20 @@
 package jp.co.dk.datastoremanager.rdb.oracle;
 
+import java.util.Date;
+import java.util.List;
+import java.util.StringJoiner;
+
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.ColumnMetaData;
 import jp.co.dk.datastoremanager.rdb.DataBaseAccessParameter;
 import jp.co.dk.datastoremanager.rdb.DataBaseDataStore;
+import jp.co.dk.datastoremanager.rdb.DataBaseRecord;
+import jp.co.dk.datastoremanager.rdb.DataConvertable;
 import jp.co.dk.datastoremanager.rdb.Sql;
 import jp.co.dk.datastoremanager.rdb.TableMetaData;
 import jp.co.dk.datastoremanager.rdb.Transaction;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecord;
 
 public class OracleDataBaseDataStore extends DataBaseDataStore {
 
@@ -18,6 +26,11 @@ public class OracleDataBaseDataStore extends DataBaseDataStore {
 	protected Transaction createTransaction(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {
 		return new OracleTransaction(dataBaseAccessParameter);
 	}
+
+	@Override
+	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
+		return new OracleTableMetaData(dataBaseDataStore, schma, tableName);
+	}
 }
 
 class OracleTransaction extends Transaction {
@@ -26,21 +39,17 @@ class OracleTransaction extends Transaction {
 		super(dataBaseAccessParameter);
 	}
 	
-	@Override
-	protected TableMetaData createTableMetaData(Transaction transaction, String schma, String tableName) {
-		return new OracleTableMetaData(transaction, schma, tableName);
-	}
 }
 
 class OracleTableMetaData extends TableMetaData {
 
-	OracleTableMetaData(Transaction transaction, String schemaName, String tableName) {
-		super(transaction, schemaName, tableName);
+	OracleTableMetaData(DataBaseDataStore dataBaseDataStore, String schemaName, String tableName) {
+		super(dataBaseDataStore, schemaName, tableName);
 	}
 
 	@Override
 	public boolean isExistsHistoryTable() throws DataStoreManagerException {
-		return this.transaction.isExistsTable(this.getHistoryTableName());
+		return this.dataBaseDataStore.isExistsTable(this.getHistoryTableName());
 	}
 	
 	@Override
@@ -51,7 +60,7 @@ class OracleTableMetaData extends TableMetaData {
 		sql.add("SELECT SYSDATE AS OPTM, '  ' AS OPTP, ");
 		sql.add(this.tableName).add(".*").add(" FROM ").add(this.tableName);
 		sql.add(" WHERE ").add("ROWNUM = 0");
-		this.transaction.createTable(sql);
+		this.dataBaseDataStore.createTable(sql);
 		return true;
 	}
 	
@@ -59,7 +68,7 @@ class OracleTableMetaData extends TableMetaData {
 	public boolean dropHistoryTable() throws DataStoreManagerException {
 		if (!this.isExistsHistoryTable()) return false;
 		Sql sql = new Sql("DROP TABLE ").add(this.getHistoryTableName());
-		this.transaction.dropTable(sql);
+		this.dataBaseDataStore.dropTable(sql);
 		return true;
 	}
 	
@@ -82,7 +91,7 @@ class OracleTableMetaData extends TableMetaData {
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":NEW.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
-		this.transaction.createTable(sql);
+		this.dataBaseDataStore.createTable(sql);
 	}
 	
 	protected void createUpdateTrigerForHistoryTable() throws DataStoreManagerException {
@@ -96,7 +105,7 @@ class OracleTableMetaData extends TableMetaData {
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":NEW.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
-		this.transaction.createTable(sql);
+		this.dataBaseDataStore.createTable(sql);
 	}
 	
 	protected void createDeleteTrigerForHistoryTable() throws DataStoreManagerException {
@@ -107,7 +116,7 @@ class OracleTableMetaData extends TableMetaData {
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":OLD.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
-		this.transaction.createTable(sql);
+		this.dataBaseDataStore.createTable(sql);
 	}
 	
 	@Override
@@ -121,18 +130,42 @@ class OracleTableMetaData extends TableMetaData {
 	
 	protected void dropInsertHistoryTrigger() throws DataStoreManagerException {
 		Sql sql = new Sql("DROP TRIGGER ").add(this.getHistoryTableName()).add("_INS_TRG");
-		this.transaction.dropTable(sql);
+		this.dataBaseDataStore.dropTable(sql);
 	}
 	
 	protected void dropUpdateHistoryTrigger() throws DataStoreManagerException {
 		Sql sql = new Sql("DROP TRIGGER ").add(this.getHistoryTableName()).add("_UPD_TRG");
-		this.transaction.dropTable(sql);
+		this.dataBaseDataStore.dropTable(sql);
 	}
 	
 	protected void dropDeleteHistoryTrigger() throws DataStoreManagerException {
 		Sql sql = new Sql("DROP TRIGGER ").add(this.getHistoryTableName()).add("_DEL_TRG");
-		this.transaction.dropTable(sql);
+		this.dataBaseDataStore.dropTable(sql);
 	}
+
+	@Override
+	public HistoryTableMetaData getHistoryTable() throws DataStoreManagerException {
+		if (!this.isExistsHistoryTable()) return null;
+		return new OracleHistoryTableMetaData(this);
+	}
+}
+
+class OracleHistoryTableMetaData extends HistoryTableMetaData {
+
+	protected OracleHistoryTableMetaData(TableMetaData tableMetaData) {
+		super(tableMetaData);
+	}
+	
+	@Override
+	public List<HistoryTableRecord> getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException {
+		StringJoiner columns = new StringJoiner(", ");
+		for (ColumnMetaData column : tableMetaData.getColumns()) columns.add(column.getColumnname());
+		Sql sql = new Sql("SELECT ").add(columns.toString()).add(" FROM ").add(this.tableMetaData.getHistoryTableName());
+		sql.add(" WHERE ");
+		sql.add("OPTM >= ?").setParameter(targetDate);
+		return new jp.co.dk.datastoremanager.rdb.AbstractDataBaseAccessObject(this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableRecord(this));
+	}
+	
 }
 
 //  lk;++zxzzzzbvn yumlc                gf ,kn....... nm,. 

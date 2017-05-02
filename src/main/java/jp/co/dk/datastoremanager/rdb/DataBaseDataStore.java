@@ -3,12 +3,14 @@ package jp.co.dk.datastoremanager.rdb;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jp.co.dk.datastoremanager.DaoConstants;
 import jp.co.dk.datastoremanager.DataAccessObject;
 import jp.co.dk.datastoremanager.DataStore;
 import jp.co.dk.datastoremanager.DataStoreKind;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
 import jp.co.dk.logger.Logger;
 import jp.co.dk.logger.LoggerFactory;
 import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;
@@ -92,20 +94,6 @@ public class DataBaseDataStore implements DataStore {
 		return false;
 	}
 	
-	public List<TableMetaData> getTable() throws DataStoreManagerException {
-		if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_START);
-		return this.transaction.getTables();
-	}
-	
-	public TableMetaData getTable(String tableName) throws DataStoreManagerException {
-		if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_START);
-		List<TableMetaData> tables = this.transaction.getTables();
-		for (TableMetaData table : tables) {
-			if (table.tableName.equals(tableName)) return table;
-		}
-		return null;
-	}
-	
 	/**
 	 * 指定のSQLを実行し、テーブルを作成する。<p/>
 	 * テーブル作成に失敗した場合、例外を送出する。
@@ -113,7 +101,7 @@ public class DataBaseDataStore implements DataStore {
 	 * @param sql 実行対象のSQLオブジェクト
 	 * @throws DataStoreManagerException テーブル作成に失敗した場合
 	 */
-	void createTable(Sql sql) throws DataStoreManagerException {
+	public void createTable(Sql sql) throws DataStoreManagerException {
 		try {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
 			this.transaction.createTable(sql);
@@ -131,7 +119,7 @@ public class DataBaseDataStore implements DataStore {
 	 * @param sql 実行対象のSQLオブジェクト
 	 * @throws DataStoreManagerException テーブル削除に失敗した場合
 	 */
-	void dropTable(Sql sql) throws DataStoreManagerException {
+	public void dropTable(Sql sql) throws DataStoreManagerException {
 		try {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
 			this.transaction.dropTable(sql);
@@ -149,7 +137,7 @@ public class DataBaseDataStore implements DataStore {
 	 * @param sql 実行対象のSQLオブジェクト
 	 * @throws DataStoreManagerException レコード追加に失敗した場合
 	 */
-	void insert(Sql sql) throws DataStoreManagerException {
+	public void insert(Sql sql) throws DataStoreManagerException {
 		try {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
 			this.transaction.insert(sql);
@@ -168,7 +156,7 @@ public class DataBaseDataStore implements DataStore {
 	 * @return 更新結果の件数
 	 * @throws DataStoreManagerException レコード更新に失敗した場合
 	 */
-	int update(Sql sql) throws DataStoreManagerException {
+	public int update(Sql sql) throws DataStoreManagerException {
 		try {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
 			int result = this.transaction.update(sql);
@@ -188,7 +176,7 @@ public class DataBaseDataStore implements DataStore {
 	 * @return 削除結果の件数
 	 * @throws DataStoreManagerException レコード削除に失敗した場合
 	 */
-	int delete(Sql sql) throws DataStoreManagerException {
+	public int delete(Sql sql) throws DataStoreManagerException {
 		try {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
 			int result = this.transaction.delete(sql);
@@ -208,7 +196,7 @@ public class DataBaseDataStore implements DataStore {
 	 * @return 実行結果
 	 * @throws DataStoreManagerException SQLの実行に失敗した場合
 	 */
-	ResultSet select(Sql sql) throws DataStoreManagerException {
+	public ResultSet select(Sql sql) throws DataStoreManagerException {
 		try {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
 			ResultSet result = this.transaction.select(sql);
@@ -220,6 +208,11 @@ public class DataBaseDataStore implements DataStore {
 		}
 	}
 	
+	public boolean isExistsTable(String tableName) throws DataStoreManagerException {
+		if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_STARTED);
+		return this.transaction.isExistsTable(tableName);
+	}
+	
 	/**
 	 * トランザクションを生成します</p>
 	 * 
@@ -228,6 +221,76 @@ public class DataBaseDataStore implements DataStore {
 	 */
 	protected Transaction createTransaction(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {
 		return new Transaction(dataBaseAccessParameter);
+	}
+	
+	/**
+	 * このトランザクションが接続できるテーブルの一覧をメタデータとして取得する。<p/>
+	 * 取得できなかった場合、空のリストを返却する。
+	 * 
+	 * @return テーブル一覧 
+	 * @throws DataStoreManagerException テーブル情報の取得に失敗した場合
+	 */
+	public List<TableMetaData> getTables() throws DataStoreManagerException {
+		if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_START);
+		List<TableMetaData> tableMetaDataList = new ArrayList<>();
+		List<String> tableNames = this.transaction.getAllTableName();
+		tableNames = tableNames.stream().filter(N -> !N.startsWith(TableMetaData.HISTRY_TABLE_NAME_HEADER)).collect(Collectors.toList());
+		String schema = this.dataBaseAccessParameter.getUser().toUpperCase();
+		for (String tableName : tableNames) tableMetaDataList.add(this.createTableMetaData(this, schema, tableName));
+		return tableMetaDataList;
+	}
+	
+	/**
+	 * このトランザクションが接続できるテーブルから指定の名称のテーブルをメタデータとして取得する。<p/>
+	 * 取得できなかった場合、NULLを返却する。
+	 * 
+	 * @param tableName 取得対象のテーブル
+	 * @return テーブル一覧 
+	 * @throws DataStoreManagerException テーブル情報の取得に失敗した場合
+	 */
+	public TableMetaData getTable(String tableName) throws DataStoreManagerException {
+		if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_START);
+		List<String> tableNames = this.transaction.getTableName(tableName);
+		tableNames = tableNames.stream().filter(N -> !N.startsWith(TableMetaData.HISTRY_TABLE_NAME_HEADER)).collect(Collectors.toList());
+		String schema = this.dataBaseAccessParameter.getUser().toUpperCase();
+		for (String tablename : tableNames) return this.createTableMetaData(this, schema, tablename);
+		return null;
+	}
+	
+	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
+		return new TableMetaData(dataBaseDataStore, schma, tableName){
+
+			@Override
+			public boolean isExistsHistoryTable() throws DataStoreManagerException {
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			}
+			
+			@Override
+			public boolean createHistoryTable() throws DataStoreManagerException {
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			}
+
+			@Override
+			public boolean dropHistoryTable() throws DataStoreManagerException {
+				throw new DataStoreManagerException(NOT_SUPPORT);				
+			}
+
+			@Override
+			public boolean createTriggerHistoryTable() throws DataStoreManagerException {
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			}
+
+			@Override
+			public boolean dropHistoryTrigger() throws DataStoreManagerException {
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			}
+
+			@Override
+			public HistoryTableMetaData getHistoryTable() throws DataStoreManagerException {
+				throw new DataStoreManagerException(NOT_SUPPORT);
+			}
+			
+		};
 	}
 	
 	@Override

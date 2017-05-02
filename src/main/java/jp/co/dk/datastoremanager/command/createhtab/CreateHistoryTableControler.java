@@ -25,7 +25,7 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 			DataBaseAccessParameter dataBaseAccessParameter = new DataBaseAccessParameter(driver.getDataStoreKind(), driver, url, user, pass);
 			DataBaseDataStore dataStore = (DataBaseDataStore)dataBaseAccessParameter.createDataStore();
 			dataStore.startTransaction();
-			List<TableMetaData> tableMetaDataList = dataStore.getTable();
+			List<TableMetaData> tableMetaDataList = dataStore.getTables();
 			
 			if (this.cmd.hasOption("i")) {
 				for (TableMetaData tableMetaData : tableMetaDataList) {
@@ -87,7 +87,6 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを作成する").withLongOpt("create").create("c"));
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを削除する").withLongOpt("drop").create("d"));
 		
-		options.addOption(OptionBuilder.isRequired(false).hasArg(true ).withArgName("tablename").withDescription("対象のテーブル名").withLongOpt("tablename").create("t"));
 	}
 	
 	public static void main(String[] args) {

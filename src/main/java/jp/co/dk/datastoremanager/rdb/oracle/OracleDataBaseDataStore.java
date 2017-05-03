@@ -98,10 +98,10 @@ class OracleTableMetaData extends TableMetaData {
 		Sql sql = new Sql("BEGIN EXECUTE IMMEDIATE 'CREATE OR REPLACE TRIGGER ").add(this.getHistoryTableName()).add("_UPD_TRG").add(" ");
 		sql.add("AFTER UPDATE ON ").add(this.tableName).add(" ").add("FOR EACH ROW ");
 		sql.add("BEGIN ");
-		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''UO''");
+		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''U1''");
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":OLD.").add(column.getColumnname());
 		sql.add(");");
-		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''UN''");
+		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''U2''");
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":NEW.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
@@ -158,12 +158,12 @@ class OracleHistoryTableMetaData extends HistoryTableMetaData {
 	
 	@Override
 	public List<HistoryTableRecord> getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException {
-		StringJoiner columns = new StringJoiner(", ");
-		for (ColumnMetaData column : tableMetaData.getColumns()) columns.add(column.getColumnname());
-		Sql sql = new Sql("SELECT ").add(columns.toString()).add(" FROM ").add(this.tableMetaData.getHistoryTableName());
-		sql.add(" WHERE ");
-		sql.add("OPTM >= ?").setParameter(targetDate);
-		return new jp.co.dk.datastoremanager.rdb.AbstractDataBaseAccessObject(this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableRecord(this));
+		Sql sql = new Sql("SELECT * FROM ").add(this.tableMetaData.getHistoryTableName());
+		sql.add(" WHERE");
+		sql.add(" OPTM >= ?").setParameter(targetDate);
+		sql.add(" ORDER BY OPTM ASC");
+		return new jp.co.dk.datastoremanager.rdb.AbstractDataBaseAccessObject(
+				this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableRecord(this));
 	}
 	
 }

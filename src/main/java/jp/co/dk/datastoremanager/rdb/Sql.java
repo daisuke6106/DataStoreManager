@@ -57,6 +57,18 @@ public class Sql {
 	}
 	
 	/**
+	 * 指定の文字列を元に、SQLの？部分にあたる文字列を設定します。<p/>
+	 * データベースに送るときに、ドライバはこれを SQL VARCHAR または LONGVARCHAR 値 (ドライバの VARCHAR 値に関する制限に関する引数のサイズに依存) に変換します。
+	 * @param SQLの？部分にあたる文字列（定数クラス）
+	 * @param parameter SQLの？部分にあたる文字列
+	 */
+	@SuppressWarnings("rawtypes")
+	public Sql setParameter(Enum parameter) {
+		this.sqlParameter.add(new StringSqlParameter(parameter.toString()));
+		return this;
+	}
+	
+	/**
 	 * 指定の数値を元に、SQLの？部分にあたる数値を設定します。<p/>
 	 * データベースに送るときに、ドライバはこれを SQL INTEGER 値に変換します。
 	 * @param parameter SQLの？部分にあたる数値(int)

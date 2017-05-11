@@ -6,7 +6,8 @@ import java.util.List;
 import jp.co.dk.datastoremanager.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
-import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecord;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecordList;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableTmpRecord;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class OracleHistoryTableMetaDataTest extends DataStoreManagerTestFoundati
 	
 	@Test
 	public void getHistoryTable() throws DataStoreManagerException {
-		List<HistoryTableRecord> result = this.target.getRecordAfterSpecifiedDate(new Date(0L));
+		HistoryTableRecordList result = this.target.getRecordAfterSpecifiedDate(new Date(0L));
 		System.out.print(result);
 	}
 }

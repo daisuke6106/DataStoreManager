@@ -271,7 +271,7 @@ public class DataBaseDataStoreTest extends DataStoreManagerTestFoundation{
 		try {
 			DataBaseDataStore target = new DataBaseDataStore(super.getAccessableDataBaseAccessParameterORACLE());
 			target.startTransaction();
-			List<TableMetaData> tableList = target.getTable();
+			List<TableMetaData> tableList = target.getTables();
 			assertThat(tableList.size(), is(1));
 		} catch (DataStoreManagerException e) {
 			fail(e);

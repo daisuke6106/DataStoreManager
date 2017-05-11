@@ -1,11 +1,9 @@
 package jp.co.dk.datastoremanager.rdb.history;
 
 import java.util.Date;
-import java.util.List;
 
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.TableMetaData;
-
 
 public abstract class HistoryTableMetaData {
 
@@ -15,5 +13,6 @@ public abstract class HistoryTableMetaData {
 		this.tableMetaData = tableMetaData;
 	}
 
-	public abstract List<HistoryTableRecord> getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException ;
+	public abstract HistoryTableRecordList getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException;
+	
 }

@@ -1,6 +1,7 @@
 package jp.co.dk.datastoremanager.rdb.history;
 
-public abstract class HistoryTableRecord {
-
+public enum OperationType {
+	
+	IN, U1, U2, DL;
 	
 }

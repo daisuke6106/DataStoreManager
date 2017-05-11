@@ -145,15 +145,6 @@ public class TransactionTest extends DataStoreManagerTestFoundation{
 	}
 	
 	@Test
-	public void getTables()throws DataStoreManagerException, ParseException, SQLException {
-		DataBaseAccessParameter param = this.getAccessableDataBaseAccessParameterMYSQL();
-		Transaction target = new Transaction(param);
-		List<TableMetaData> list = target.getTables();
-		List<ColumnMetaData> cplumns = list.get(0).getColumns();
-		System.out.println(list);
-	}
-	
-	@Test
 	public void commit() throws DataStoreManagerException, ParseException, SQLException {
 		// ==============================正常系==============================
 		// ２つのトランザクションの間でSELECTを行った場合、コミットを行った場合に限り、他のトランザクションから参照可能になること

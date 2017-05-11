@@ -1,5 +1,6 @@
 package jp.co.dk.datastoremanager.rdb.oracle;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
@@ -13,8 +14,11 @@ import jp.co.dk.datastoremanager.rdb.DataConvertable;
 import jp.co.dk.datastoremanager.rdb.Sql;
 import jp.co.dk.datastoremanager.rdb.TableMetaData;
 import jp.co.dk.datastoremanager.rdb.Transaction;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableInsertRecord;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
-import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecord;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecordList;
+import jp.co.dk.datastoremanager.rdb.history.HistoryTableTmpRecord;
+import jp.co.dk.datastoremanager.rdb.history.OperationType;
 
 public class OracleDataBaseDataStore extends DataBaseDataStore {
 
@@ -87,7 +91,7 @@ class OracleTableMetaData extends TableMetaData {
 		Sql sql = new Sql("BEGIN EXECUTE IMMEDIATE 'CREATE OR REPLACE TRIGGER ").add(this.getHistoryTableName()).add("_INS_TRG").add(" ");
 		sql.add("AFTER INSERT ON ").add(this.tableName).add(" ").add("FOR EACH ROW ");
 		sql.add("BEGIN ");
-		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''IS''");
+		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''").add(OperationType.IN.toString()).add("''");
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":NEW.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
@@ -98,10 +102,10 @@ class OracleTableMetaData extends TableMetaData {
 		Sql sql = new Sql("BEGIN EXECUTE IMMEDIATE 'CREATE OR REPLACE TRIGGER ").add(this.getHistoryTableName()).add("_UPD_TRG").add(" ");
 		sql.add("AFTER UPDATE ON ").add(this.tableName).add(" ").add("FOR EACH ROW ");
 		sql.add("BEGIN ");
-		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''U1''");
+		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''").add(OperationType.U1.toString()).add("''");
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":OLD.").add(column.getColumnname());
 		sql.add(");");
-		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''U2''");
+		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''").add(OperationType.U2.toString()).add("''");
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":NEW.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
@@ -112,7 +116,7 @@ class OracleTableMetaData extends TableMetaData {
 		Sql sql = new Sql("BEGIN EXECUTE IMMEDIATE 'CREATE OR REPLACE TRIGGER ").add(this.getHistoryTableName()).add("_DEL_TRG").add(" ");
 		sql.add("AFTER DELETE ON ").add(this.tableName).add(" ").add("FOR EACH ROW ");
 		sql.add("BEGIN ");
-		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''DL''");
+		sql.add("INSERT INTO ").add(this.getHistoryTableName()).add(" VALUES( SYSDATE, ''").add(OperationType.DL.toString()).add("''");
 		for (ColumnMetaData column : this.getColumns()) sql.add(", ").add(":OLD.").add(column.getColumnname());
 		sql.add(");");
 		sql.add("END;'; END;");
@@ -157,14 +161,17 @@ class OracleHistoryTableMetaData extends HistoryTableMetaData {
 	}
 	
 	@Override
-	public List<HistoryTableRecord> getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException {
+	public HistoryTableRecordList getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException {
 		Sql sql = new Sql("SELECT * FROM ").add(this.tableMetaData.getHistoryTableName());
 		sql.add(" WHERE");
 		sql.add(" OPTM >= ?").setParameter(targetDate);
 		sql.add(" ORDER BY OPTM ASC");
-		return new jp.co.dk.datastoremanager.rdb.AbstractDataBaseAccessObject(
-				this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableRecord(this));
+		List<HistoryTableTmpRecord> historyTableRecordList = new jp.co.dk.datastoremanager.rdb.AbstractDataBaseAccessObject(
+				this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableTmpRecord(this, this.tableMetaData.getColumns()));
+		
+		return new HistoryTableRecordList(historyTableRecordList);
 	}
+	
 	
 }
 

@@ -1,7 +1,12 @@
 package jp.co.dk.datastoremanager.rdb.history;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.co.dk.document.excel.book.WorkBook;
+import jp.co.dk.document.excel.exception.ExcelDocumentException;
 
 public class HistoryTableRecordList {
 	
@@ -29,4 +34,9 @@ public class HistoryTableRecordList {
 			}
 		}
 	}
+	
+//	public void writeExcel(OutputStream ops) throws ExcelDocumentException {
+//		WorkBook workbook = new WorkBook(file);
+//		workbook.createSheet(sheetName)
+//	}
 }

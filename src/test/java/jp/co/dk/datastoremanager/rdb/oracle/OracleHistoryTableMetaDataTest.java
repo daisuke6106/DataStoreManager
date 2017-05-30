@@ -1,13 +1,11 @@
 package jp.co.dk.datastoremanager.rdb.oracle;
 
 import java.util.Date;
-import java.util.List;
 
 import jp.co.dk.datastoremanager.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecordList;
-import jp.co.dk.datastoremanager.rdb.history.HistoryTableTmpRecord;
 
 import org.junit.Before;
 import org.junit.Test;

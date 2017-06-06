@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.ColumnMetaData;
 import jp.co.dk.datastoremanager.rdb.DataBaseRecord;
@@ -50,5 +53,22 @@ public class HistoryTableTmpRecord implements DataConvertable {
 		return new HistoryTableTmpRecord(this.historyTableMetaData, this.columnList, operationTime, operationType, columnData);
 	}
 	
+	Element createTrRecord(Document document) {
+		Element tr = document.createElement("tr");
+		for (Object column : columnData) {
+			Element td = document.createElement("td");
+			td.setTextContent(column.toString());
+			tr.appendChild(td);
+		}
+		return tr;
+	}
 	
+	Element createBrankTrRecord(Document document, String dispStr) {
+		Element tr = document.createElement("tr");
+		Element td = document.createElement("td");
+		td.setTextContent(dispStr);
+		td.setAttribute("colspan", Integer.toString(this.columnList.size()));
+		tr.appendChild(td);
+		return tr;
+	}
 }

@@ -68,7 +68,6 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 		return new jp.co.dk.datastoremanager.gdb.DataBaseAccessParameter(DataStoreKind.NEO4J, DataBaseDriverConstants.NEO4J, "255.255.255.255:7474");
 	}
 	
-	
 	public Sql createTableSql() throws DataStoreManagerException {
 		return new Sql("CREATE TABLE TEST_USERS( USERID VARCHAR(10) NOT NULL PRIMARY KEY, AGE INT(3), BIRTHDAY DATE );");
 	}
@@ -149,5 +148,75 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 	
 	public Sql dropTableSql() throws DataStoreManagerException {
 		return new Sql("DROP TABLE TEST_USERS");
+	}
+	
+	
+	public Sql createAllTypeColumnsTableSql() throws DataStoreManagerException {
+		Sql sql = new Sql("");
+		sql.add("CREATE TABLE ALL_TYPE_COLUMNS (");
+		// ==== 文字列 ====
+		sql.add(" COL_VARCHAR2  VARCHAR2(10),");      // 可変長の文字列
+		sql.add(" COL_NVARCHAR2 NVARCHAR2(10),");     // 可変長のUnicode文字列
+		sql.add(" COL_CHAR      CHAR(10),");          // 固定長の文字列
+		sql.add(" COL_NCHAR     NCHAR(10),");         // 固定長のUnicode文字列
+		// sql.add(" COL_LONG      LONG,");
+		
+		// 数値
+		sql.add(" COL_NUMBER    NUMBER(10, 5),");     // 数値
+		sql.add(" COL_BINARY_FLOAT  BINARY_FLOAT,");  // 単精度浮動小数点数
+		sql.add(" COL_BINARY_DOUBLE BINARY_DOUBLE,"); // 倍精度浮動小数点数
+		
+		// 日付と時刻
+		sql.add(" COL_DATE DATE,");                   // 日付と時刻
+		sql.add(" COL_TIMESTAMP TIMESTAMP,");         // 日付と時刻(ミリ秒)
+		// sql.add(" COL_TIMESTAMP_WITH_TIMEZONE       TIMESTAMP WITH TIMEZONE,");       // 
+		// sql.add(" COL_TIMESTAMP_WITH_LOCAL_TIMEZONE TIMESTAMP WITH LOCAL TIMEZONE,"); // 
+		sql.add(" COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH,"); // 2つの日付の差分
+		sql.add(" COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY TO SECOND,"); // 2つの日付と時刻の差分
+		
+		// バイナリ
+		sql.add(" COL_RAW RAW(10),");                 // バイナリデータ
+		sql.add(" COL_LONG_RAW LONG RAW,");           // 可変長のバイナリデータ
+		
+		// ラージオブジェクト
+		sql.add(" COL_CLOB CLOB,");                   // キャラクタ型ラージオブジェクト
+		sql.add(" COL_NCLOB NCLOB,");                 // Unicodeキャラクタ型ラージオブジェクト
+		sql.add(" COL_BLOB BLOB,");                   // バイナリ型ラージオブジェクト
+		
+		// その他
+		// sql.add(" COL_ROWID ROWID,");              // 行識別子
+		sql.add(" COL_BFILE BFILE");                  // データベース外のバイナリファイル
+		sql.add(")");
+		
+		// 参考：http://itref.fc2web.com/oracle/data-type.html
+		return sql;
+	}
+	
+	public Sql insertAllTypeColumnsTableSql() throws DataStoreManagerException {
+		Sql sql = new Sql("");
+		sql.add("INSERT INTO ALL_COLUMNS VALUES(");
+		sql.add("'ABCDEFGHIJ',");                                                        // VARCHAR2 
+		sql.add("'abcdefghij',");                                                        // NVARCHAR2
+		sql.add("'ABCDEFGHIJ',");                                                        // CHAR     
+		sql.add("'abcdefghij',");                                                        // NCHAR    
+		sql.add("12345.123,");                                                           // NUMBER
+		sql.add("12345.123,");                                                           // BINARY_FLOAT 
+		sql.add("12345.123,");                                                           // BINARY_DOUBLE
+		sql.add("to_date('2006/02/21 15:35:23','yyyy/mm/dd hh24:mi:ss'),");              // DATE
+		sql.add("to_timestamp('2006/02/21 15:35:23.556','yyyy/mm/dd hh24:mi:ss.ff3'),"); // TIMESTAMP
+		sql.add("null,");                                                                // INTERVAL YEAR TO MONTH
+		sql.add("null,");                                                                // INTERVAL DAY TO SECOND
+		sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // RAW
+		sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // LONG RAW
+		sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // CLOB
+		sql.add("TO_NCLOB('太郎') ,");                                                   // NCLOB
+		sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // BLOB
+		sql.add("null");                                                                 // BFILE
+		sql.add(")");
+		return sql;
+	}
+	
+	public Sql dropAllTypeColumnsTableSql() throws DataStoreManagerException {
+		return new Sql("DROP TABLE ALL_TYPE_COLUMNS");
 	}
 }

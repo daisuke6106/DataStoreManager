@@ -1,5 +1,8 @@
 package jp.co.dk.datastoremanager.rdb.history;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 public class HistoryTableUpdateRecord extends HistoryTableRecord {
 
 	protected HistoryTableTmpRecord historyTableUpdateFromRecord;
@@ -10,4 +13,15 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 		this.historyTableUpdateFromRecord = historyTableUpdateFromRecord;
 		this.historyTableUpdateToRecord   = historyTableUpdateToRecord;
 	}
+
+	@Override
+	Element createBeforeTrRecord(Document document) {
+		return this.historyTableUpdateFromRecord.createTrRecord(document);
+	}
+
+	@Override
+	Element createAfterTrRecord(Document document) {
+		return this.historyTableUpdateToRecord.createTrRecord(document);
+	}
+
 }

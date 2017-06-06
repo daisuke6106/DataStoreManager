@@ -169,7 +169,7 @@ class OracleHistoryTableMetaData extends HistoryTableMetaData {
 		List<HistoryTableTmpRecord> historyTableRecordList = new jp.co.dk.datastoremanager.rdb.AbstractDataBaseAccessObject(
 				this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableTmpRecord(this, this.tableMetaData.getColumns()));
 		
-		return new HistoryTableRecordList(historyTableRecordList);
+		return new HistoryTableRecordList(this, historyTableRecordList);
 	}
 	
 	

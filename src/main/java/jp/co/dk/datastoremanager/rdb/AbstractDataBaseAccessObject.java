@@ -1,5 +1,6 @@
 package jp.co.dk.datastoremanager.rdb;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,7 +171,7 @@ public abstract class AbstractDataBaseAccessObject implements DataAccessObject{
 	@SuppressWarnings("unchecked")
 	public <E extends DataConvertable> List<E> selectMulti(Sql sql, E convertable) throws DataStoreManagerException{
 		List<E> resultList = new ArrayList<E>();
-		DataBaseRecord result = new DataBaseRecord(this.dataStore.select(sql));
+		DataBaseRecord result = this.dataStore.createDataBaseRecord(this.dataStore.select(sql));
 		try {
 			while (result.next()) resultList.add((E)convertable.convert(result));
 			result.close();

@@ -22,7 +22,7 @@ import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;
  * @version 1.0
  * @author D.Kanno
  */
-public class DataBaseDataStore implements DataStore {
+public abstract class DataBaseDataStore implements DataStore {
 	
 	/** データベースアクセスパラメータ */
 	protected DataBaseAccessParameter dataBaseAccessParameter;
@@ -257,41 +257,9 @@ public class DataBaseDataStore implements DataStore {
 		return null;
 	}
 	
-	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
-		return new TableMetaData(dataBaseDataStore, schma, tableName){
-
-			@Override
-			public boolean isExistsHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-			
-			@Override
-			public boolean createHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-
-			@Override
-			public boolean dropHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);				
-			}
-
-			@Override
-			public boolean createTriggerHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-
-			@Override
-			public boolean dropHistoryTrigger() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-
-			@Override
-			public HistoryTableMetaData getHistoryTable() throws DataStoreManagerException {
-				throw new DataStoreManagerException(NOT_SUPPORT);
-			}
-			
-		};
-	}
+	protected abstract TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) ;
+	
+	protected abstract DataBaseRecord createDataBaseRecord(ResultSet resultSet);
 	
 	@Override
 	public int hashCode() {

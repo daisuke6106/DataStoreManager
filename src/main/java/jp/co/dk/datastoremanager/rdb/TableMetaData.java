@@ -36,13 +36,15 @@ public abstract class TableMetaData {
 //			ResultSetMetaData metaData= rs.getMetaData();
 //			for (int i = 1; i <= metaData.getColumnCount(); i++) System.out.println(metaData.getColumnName(i));
 			
-			for (int i=0; rs.next(); i++) columnMetaDataList.add(new ColumnMetaData(rs, i));
+			for (int i=0; rs.next(); i++) columnMetaDataList.add(this.createColumnMetaData(rs, i));
 			return columnMetaDataList;
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(FAILED_TO_ACQUIRE_COLUMN_INFO, e);
 		}
 	}
-		
+	
+	protected abstract ColumnMetaData createColumnMetaData(ResultSet rs, int i) throws SQLException;
+	
 	public String getHistoryTableName() {
 		return HISTRY_TABLE_NAME_HEADER + this.tableName;
 	}

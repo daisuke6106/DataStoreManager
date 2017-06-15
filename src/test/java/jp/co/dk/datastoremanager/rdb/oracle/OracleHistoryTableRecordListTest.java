@@ -10,11 +10,13 @@ import jp.co.dk.datastoremanager.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecordList;
+import jp.co.dk.datastoremanager.rdb.oracle.OracleDataBaseDataStore;
+import jp.co.dk.datastoremanager.rdb.oracle.OracleTableMetaData;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class HistoryTableRecordListTest extends DataStoreManagerTestFoundation{
+public class OracleHistoryTableRecordListTest extends DataStoreManagerTestFoundation{
 	
 	protected HistoryTableRecordList target;
 

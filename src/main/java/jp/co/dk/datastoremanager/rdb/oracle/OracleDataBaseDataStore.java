@@ -1,24 +1,25 @@
 package jp.co.dk.datastoremanager.rdb.oracle;
 
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.StringJoiner;
 
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.rdb.ColumnMetaData;
 import jp.co.dk.datastoremanager.rdb.DataBaseAccessParameter;
 import jp.co.dk.datastoremanager.rdb.DataBaseDataStore;
 import jp.co.dk.datastoremanager.rdb.DataBaseRecord;
-import jp.co.dk.datastoremanager.rdb.DataConvertable;
 import jp.co.dk.datastoremanager.rdb.Sql;
 import jp.co.dk.datastoremanager.rdb.TableMetaData;
 import jp.co.dk.datastoremanager.rdb.Transaction;
-import jp.co.dk.datastoremanager.rdb.history.HistoryTableInsertRecord;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableRecordList;
 import jp.co.dk.datastoremanager.rdb.history.HistoryTableTmpRecord;
 import jp.co.dk.datastoremanager.rdb.history.OperationType;
+
+import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;
 
 public class OracleDataBaseDataStore extends DataBaseDataStore {
 
@@ -35,12 +36,30 @@ public class OracleDataBaseDataStore extends DataBaseDataStore {
 	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
 		return new OracleTableMetaData(dataBaseDataStore, schma, tableName);
 	}
+
+	@Override
+	protected DataBaseRecord createDataBaseRecord(ResultSet resultSet) {
+		return new OracleDataBaseRecord(resultSet);
+	}
 }
 
 class OracleTransaction extends Transaction {
 
 	OracleTransaction(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {
 		super(dataBaseAccessParameter);
+	}
+	
+}
+
+class OracleDataBaseRecord extends DataBaseRecord {
+
+	OracleDataBaseRecord(ResultSet resultSet) {
+		super(resultSet);
+	}
+
+	@Override
+	protected ColumnMetaData createColumnMetaData(ResultSetMetaData rs, int i) throws SQLException {
+		return new OracleColumnMetaData(rs, i);
 	}
 	
 }
@@ -152,6 +171,11 @@ class OracleTableMetaData extends TableMetaData {
 		if (!this.isExistsHistoryTable()) return null;
 		return new OracleHistoryTableMetaData(this);
 	}
+
+	@Override
+	protected ColumnMetaData createColumnMetaData(ResultSet rs, int i) throws SQLException {
+		return new OracleColumnMetaData(rs, i);
+	}
 }
 
 class OracleHistoryTableMetaData extends HistoryTableMetaData {
@@ -171,7 +195,119 @@ class OracleHistoryTableMetaData extends HistoryTableMetaData {
 		
 		return new HistoryTableRecordList(this, historyTableRecordList);
 	}
+}
+
+class OracleColumnMetaData extends ColumnMetaData {
+
+	protected OracleColumnMetaData(ResultSetMetaData metaData, int index) throws SQLException {
+		super(metaData, index);
+	}
+
+	protected OracleColumnMetaData(ResultSet resultSet, int index) throws SQLException {
+		super(resultSet, index);
+	}
 	
+	@Override
+	public Object getData(DataBaseRecord record) throws DataStoreManagerException {
+		
+		switch (columnIntType) {
+			// === CHAR ===
+			case java.sql.Types.CHAR:
+				return record.getString(columnname);
+
+			// === NCHAR ===
+			// Types.NCHAR (12.1.0.2) 
+			case java.sql.Types.NCHAR:
+			// Types.OTHER (12.1.0.1以前) 
+			// case java.sql.Types.OTHER:
+				return record.getString(columnname);
+
+			// === VARCHAR2 ===
+			case java.sql.Types.VARCHAR:
+				return record.getString(columnname);
+
+			// === NVARCHAR2 ===
+			// Types.NVARCHAR (12.1.0.2) 
+			// case java.sql.Types.NVARCHAR:
+			// Types.OTHER (12.1.0.1以前)
+			case java.sql.Types.OTHER:
+				return record.getString(columnname);
+				
+			// === NUMBER ===
+			case java.sql.Types.DECIMAL:
+				return record.getBigDecimal(columnname);
+
+			// === FLOAT ===
+			case java.sql.Types.FLOAT:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+			
+			// === BINARY_FLOAT ===
+			case 100:	
+				return record.getBigDecimal(columnname);
+
+			// === BINARY_DOUBLE ===
+			case 101:
+				return record.getBigDecimal(columnname);
+			
+			// === LONG ===
+			case java.sql.Types.LONGVARCHAR:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+
+			// === DATE/TIMESTAMP ===
+			case java.sql.Types.TIMESTAMP:
+				return record.getDate(columnname);
+			
+			// TIMESTAMP WITH TIME ZONE
+			case -101:
+			// TIMESTAMP WITH LOCAL TIME ZONE
+			case -102:
+			// INTERVAL YEAR TO MONTH
+			case -103:
+			// INTERVAL DAY TO SECOND
+			case -104:
+				return record.getDate(columnname);
+			
+				
+			// === RAW ===
+			case java.sql.Types.VARBINARY:
+				return record.getBytes(columnname);
+				
+			// === LONG RAW ===
+			case java.sql.Types.LONGVARBINARY:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+				
+			// === BFILE ===
+			case -13:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+			
+			// === BLOB ===
+			case java.sql.Types.BLOB:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());				
+			
+			// === CLOB ===
+			case java.sql.Types.CLOB:
+				return record.getString(columnname);
+			
+			// === NCLOB ===
+			// Types.NCLOB (12.1.0.2) 
+			// Types.OTHER (12.1.0.1以前)
+			case java.sql.Types.NCLOB:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+
+			// === ROWID/UROWID ===
+			// Types.ROWID (12.1.0.2) 
+			// Types.OTHER (12.1.0.1以前)
+			case java.sql.Types.ROWID:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+				
+			default:
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+			
+			// 参考
+			// http://hito4-t.hatenablog.com/entry/2015/03/07/220621
+			// http://d.hatena.ne.jp/amutan/20090222/1235300058
+		}
+	}
 	
 }
 

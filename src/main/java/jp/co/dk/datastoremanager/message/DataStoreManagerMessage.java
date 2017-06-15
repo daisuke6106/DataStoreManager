@@ -124,7 +124,7 @@ public class DataStoreManagerMessage extends AbstractMessage{
 	/** 行番号の取得に失敗しました。 */
 	public static final DataStoreManagerMessage FAILE_TO_GET_ROWINDEX = new DataStoreManagerMessage("E038");
 	
-	/** サポートされていません。 */
+	/** サポートされていません。{0} */
 	public static final DataStoreManagerMessage NOT_SUPPORT = new DataStoreManagerMessage("E039");
 	
 	protected DataStoreManagerMessage(String messageId) {

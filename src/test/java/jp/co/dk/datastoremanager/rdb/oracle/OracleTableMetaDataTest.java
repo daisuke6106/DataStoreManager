@@ -2,10 +2,14 @@ package jp.co.dk.datastoremanager.rdb.oracle;
 
 import jp.co.dk.datastoremanager.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.rdb.oracle.OracleDataBaseDataStore;
+import jp.co.dk.datastoremanager.rdb.oracle.OracleHistoryTableMetaData;
+import jp.co.dk.datastoremanager.rdb.oracle.OracleTableMetaData;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 

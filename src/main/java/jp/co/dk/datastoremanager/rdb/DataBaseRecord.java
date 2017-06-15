@@ -3,6 +3,7 @@ package jp.co.dk.datastoremanager.rdb;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;
  * @version 1.0
  * @author D.Kanno
  */
-public class DataBaseRecord implements Record {
+public abstract class DataBaseRecord implements Record {
 	
 	/** カラムメタデータ一覧 */
 	protected List<ColumnMetaData> columnMetaData;
@@ -33,7 +34,7 @@ public class DataBaseRecord implements Record {
 	 * 
 	 * @param resultSet
 	 */
-	DataBaseRecord(ResultSet resultSet) {
+	protected DataBaseRecord(ResultSet resultSet) {
 		this.resultSet = resultSet;
 	}
 	
@@ -68,13 +69,15 @@ public class DataBaseRecord implements Record {
 			if (columnMetaData == null) {
 				this.columnMetaData = new ArrayList<>();
 				ResultSetMetaData metaData= this.resultSet.getMetaData();
-				for (int i = 1; i <= metaData.getColumnCount(); i++) this.columnMetaData.add(new ColumnMetaData(metaData, i));
+				for (int i = 1; i <= metaData.getColumnCount(); i++) this.columnMetaData.add(this.createColumnMetaData(metaData, i));
 			}
 			return this.columnMetaData;
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(FAILE_TO_GET_COLUMN_NAME);
 		}
 	}
+	
+	protected abstract ColumnMetaData createColumnMetaData(ResultSetMetaData rs, int i) throws SQLException ;
 	
 	/**
 	 * このレコードから指定のカラム名の文字列を取得します。
@@ -101,6 +104,21 @@ public class DataBaseRecord implements Record {
 	public int getInt(String column) throws DataStoreManagerException {
 		try {
 			return this.resultSet.getInt(column);
+		} catch (SQLException e) {
+			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
+		}
+	}
+	
+	/**
+	 * このレコードから指定のカラム名の数値を取得します。
+	 * 
+	 * @param column カラム名
+	 * @return 数値
+	 * @throws DataStoreManagerException 値の取得に失敗した場合
+	 */
+	public BigDecimal getBigDecimal(String column) throws DataStoreManagerException {
+		try {
+			return this.resultSet.getBigDecimal(column);
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}

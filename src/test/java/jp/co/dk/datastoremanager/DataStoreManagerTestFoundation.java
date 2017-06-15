@@ -3,7 +3,9 @@ package jp.co.dk.datastoremanager;
 import java.text.ParseException;
 
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.rdb.DataBaseDataStore;
 import jp.co.dk.datastoremanager.rdb.Sql;
+import jp.co.dk.datastoremanager.rdb.oracle.OracleDataBaseDataStore;
 import jp.co.dk.test.template.TestCaseTemplate;
 
 public class DataStoreManagerTestFoundation extends TestCaseTemplate{
@@ -150,10 +152,8 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 		return new Sql("DROP TABLE TEST_USERS");
 	}
 	
-	
 	public Sql createAllTypeColumnsTableSql() throws DataStoreManagerException {
-		Sql sql = new Sql("");
-		sql.add("CREATE TABLE ALL_TYPE_COLUMNS (");
+		Sql sql = new Sql("CREATE TABLE ALL_TYPE_COLUMNS (");
 		// ==== 文字列 ====
 		sql.add(" COL_VARCHAR2  VARCHAR2(10),");      // 可変長の文字列
 		sql.add(" COL_NVARCHAR2 NVARCHAR2(10),");     // 可変長のUnicode文字列
@@ -176,7 +176,7 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 		
 		// バイナリ
 		sql.add(" COL_RAW RAW(10),");                 // バイナリデータ
-		sql.add(" COL_LONG_RAW LONG RAW,");           // 可変長のバイナリデータ
+		// sql.add(" COL_LONG_RAW LONG RAW,");           // 可変長のバイナリデータ
 		
 		// ラージオブジェクト
 		sql.add(" COL_CLOB CLOB,");                   // キャラクタ型ラージオブジェクト
@@ -193,8 +193,7 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 	}
 	
 	public Sql insertAllTypeColumnsTableSql() throws DataStoreManagerException {
-		Sql sql = new Sql("");
-		sql.add("INSERT INTO ALL_COLUMNS VALUES(");
+		Sql sql = new Sql("INSERT INTO ALL_TYPE_COLUMNS VALUES(");
 		sql.add("'ABCDEFGHIJ',");                                                        // VARCHAR2 
 		sql.add("'abcdefghij',");                                                        // NVARCHAR2
 		sql.add("'ABCDEFGHIJ',");                                                        // CHAR     
@@ -207,7 +206,7 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 		sql.add("null,");                                                                // INTERVAL YEAR TO MONTH
 		sql.add("null,");                                                                // INTERVAL DAY TO SECOND
 		sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // RAW
-		sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // LONG RAW
+		// sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // LONG RAW
 		sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // CLOB
 		sql.add("TO_NCLOB('太郎') ,");                                                   // NCLOB
 		sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // BLOB

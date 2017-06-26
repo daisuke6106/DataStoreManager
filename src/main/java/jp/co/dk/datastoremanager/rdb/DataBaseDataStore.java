@@ -10,7 +10,6 @@ import jp.co.dk.datastoremanager.DataAccessObject;
 import jp.co.dk.datastoremanager.DataStore;
 import jp.co.dk.datastoremanager.DataStoreKind;
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.rdb.history.HistoryTableMetaData;
 import jp.co.dk.logger.Logger;
 import jp.co.dk.logger.LoggerFactory;
 import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;

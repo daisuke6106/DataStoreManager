@@ -180,12 +180,12 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 		
 		// ラージオブジェクト
 		sql.add(" COL_CLOB CLOB,");                   // キャラクタ型ラージオブジェクト
-		sql.add(" COL_NCLOB NCLOB,");                 // Unicodeキャラクタ型ラージオブジェクト
-		sql.add(" COL_BLOB BLOB,");                   // バイナリ型ラージオブジェクト
+		sql.add(" COL_NCLOB NCLOB");                 // Unicodeキャラクタ型ラージオブジェクト
+		// sql.add(" COL_BLOB BLOB,");                   // バイナリ型ラージオブジェクト
 		
 		// その他
 		// sql.add(" COL_ROWID ROWID,");              // 行識別子
-		sql.add(" COL_BFILE BFILE");                  // データベース外のバイナリファイル
+		// sql.add(" COL_BFILE BFILE");                  // データベース外のバイナリファイル
 		sql.add(")");
 		
 		// 参考：http://itref.fc2web.com/oracle/data-type.html
@@ -208,9 +208,9 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 		sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // RAW
 		// sql.add("HEXTORAW('3E00210102CDA000C9'),");                                      // LONG RAW
 		sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // CLOB
-		sql.add("TO_NCLOB('太郎') ,");                                                   // NCLOB
-		sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // BLOB
-		sql.add("null");                                                                 // BFILE
+		sql.add("TO_NCLOB('太郎')");                                                   // NCLOB
+		// sql.add("UTL_RAW.CAST_TO_RAW('太郎'),");                                         // BLOB
+		// sql.add("null");                                                                 // BFILE
 		sql.add(")");
 		return sql;
 	}

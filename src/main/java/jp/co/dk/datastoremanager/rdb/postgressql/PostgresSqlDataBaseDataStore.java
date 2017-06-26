@@ -14,15 +14,12 @@ public class PostgresSqlDataBaseDataStore extends DataBaseDataStore {
 	}
 
 	@Override
-	protected TableMetaData createTableMetaData(
-			DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
-		// TODO Auto-generated method stub
+	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
 		return null;
 	}
 
 	@Override
 	protected DataBaseRecord createDataBaseRecord(ResultSet resultSet) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -1,6 +1,5 @@
 package jp.co.dk.datastoremanager.rdb.history;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +14,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import jp.co.dk.document.excel.book.WorkBook;
-import jp.co.dk.document.excel.exception.ExcelDocumentException;
 
 public class HistoryTableRecordList {
 	

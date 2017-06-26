@@ -267,7 +267,6 @@ class OracleColumnMetaData extends ColumnMetaData {
 			case -104:
 				return record.getDate(columnname);
 			
-				
 			// === RAW ===
 			case java.sql.Types.VARBINARY:
 				return record.getBytes(columnname);

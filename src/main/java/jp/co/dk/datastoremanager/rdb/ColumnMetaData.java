@@ -6,8 +6,6 @@ import java.sql.SQLException;
 
 import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
 
-import static jp.co.dk.datastoremanager.message.DataStoreManagerMessage.*;
-
 /**
  * カラムに付随するメタデータを表すクラスです。
  * カラムが所属するデータベース名、カラム名、カラムサイズ、カラムタイプなどを保持します。

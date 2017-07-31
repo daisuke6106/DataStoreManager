@@ -1,4 +1,4 @@
-package jp.co.dk.datastoremanager.command.exporter.html;
+package jp.co.dk.datastoremanager.command.exporter;
 
 import java.io.File;
 import java.io.FileNotFoundException;

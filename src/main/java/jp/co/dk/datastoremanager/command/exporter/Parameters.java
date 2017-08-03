@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jp.co.dk.datastoremanager.exception.DataStoreExporterException;
-import jp.co.dk.datastoremanager.message.DataStoreExporterMessage;
+import jp.co.dk.datastoremanager.core.exception.DataStoreExporterException;
+import jp.co.dk.datastoremanager.core.message.DataStoreExporterMessage;
 
 /**
  * <p>パラメータの一覧を表すクラスです。</p>

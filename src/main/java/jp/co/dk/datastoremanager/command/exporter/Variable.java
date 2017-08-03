@@ -1,7 +1,7 @@
 package jp.co.dk.datastoremanager.command.exporter;
 
-import jp.co.dk.datastoremanager.exception.DataStoreExporterException;
-import static jp.co.dk.datastoremanager.message.DataStoreExporterMessage.*;
+import jp.co.dk.datastoremanager.core.exception.DataStoreExporterException;
+import static jp.co.dk.datastoremanager.core.message.DataStoreExporterMessage.*;
 
 public class Variable {
 	

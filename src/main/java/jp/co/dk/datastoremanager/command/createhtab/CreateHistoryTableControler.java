@@ -2,12 +2,12 @@ package jp.co.dk.datastoremanager.command.createhtab;
 
 import java.util.List;
 
-import jp.co.dk.datastoremanager.DataBaseDriverConstants;
 import jp.co.dk.datastoremanager.command.AbtractCommandControler;
-import jp.co.dk.datastoremanager.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.rdb.DataBaseAccessParameter;
-import jp.co.dk.datastoremanager.rdb.DataBaseDataStore;
-import jp.co.dk.datastoremanager.rdb.TableMetaData;
+import jp.co.dk.datastoremanager.core.DataBaseDriverConstants;
+import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter;
+import jp.co.dk.datastoremanager.core.rdb.DataBaseDataStore;
+import jp.co.dk.datastoremanager.core.rdb.TableMetaData;
 
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;

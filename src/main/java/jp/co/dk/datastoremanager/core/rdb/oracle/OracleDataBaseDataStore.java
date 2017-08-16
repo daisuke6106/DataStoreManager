@@ -242,11 +242,13 @@ class OracleColumnMetaData extends ColumnMetaData {
 			
 			// === BINARY_FLOAT ===
 			case 100:	
-				return record.getBigDecimal(columnname);
+				// return record.getBigDecimal(columnname);
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
 
 			// === BINARY_DOUBLE ===
 			case 101:
-				return record.getBigDecimal(columnname);
+				// return record.getBigDecimal(columnname);
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
 			
 			// === LONG ===
 			case java.sql.Types.LONGVARCHAR:
@@ -264,11 +266,13 @@ class OracleColumnMetaData extends ColumnMetaData {
 			case -103:
 			// INTERVAL DAY TO SECOND
 			case -104:
-				return record.getDate(columnname);
+				// return record.getDate(columnname);
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
 			
 			// === RAW ===
 			case java.sql.Types.VARBINARY:
-				return record.getBytes(columnname);
+				// return record.getBytes(columnname);
+				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
 				
 			// === LONG RAW ===
 			case java.sql.Types.LONGVARBINARY:
@@ -280,7 +284,8 @@ class OracleColumnMetaData extends ColumnMetaData {
 			
 			// === BLOB ===
 			case java.sql.Types.BLOB:
-				throw new DataStoreManagerException(NOT_SUPPORT, this.toString());				
+				// throw new DataStoreManagerException(NOT_SUPPORT, this.toString());
+				return record.getBytes(columnname);
 			
 			// === CLOB ===
 			case java.sql.Types.CLOB:

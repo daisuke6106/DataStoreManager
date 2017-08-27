@@ -40,6 +40,18 @@ public class OracleDataBaseDataStore extends DataBaseDataStore {
 	protected DataBaseRecord createDataBaseRecord(ResultSet resultSet) {
 		return new OracleDataBaseRecord(resultSet);
 	}
+
+	@Override
+	public Date getDataBaseTime() throws DataStoreManagerException {
+		Sql sql = new Sql("SELECT SYSDATE FROM DUAL");
+		try {
+			ResultSet rs = this.select(sql);
+			rs.next();
+			return rs.getDate("SYSDATE");
+		} catch (SQLException e) {
+			throw new DataStoreManagerException(FAILE_TO_GET_SYSDATE, e);
+		}
+	}
 }
 
 class OracleTransaction extends Transaction {

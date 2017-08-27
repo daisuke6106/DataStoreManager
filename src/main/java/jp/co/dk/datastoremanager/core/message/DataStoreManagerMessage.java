@@ -127,6 +127,9 @@ public class DataStoreManagerMessage extends AbstractMessage{
 	/** サポートされていません。{0} */
 	public static final DataStoreManagerMessage NOT_SUPPORT = new DataStoreManagerMessage("E039");
 	
+	/** 現在時刻の取得に失敗しました。 */
+	public static final DataStoreManagerMessage FAILE_TO_GET_SYSDATE = new DataStoreManagerMessage("E040");
+	
 	protected DataStoreManagerMessage(String messageId) {
 		super(messageId);
 	}

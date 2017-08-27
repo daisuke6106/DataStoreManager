@@ -2,6 +2,7 @@ package jp.co.dk.datastoremanager.core.rdb;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -260,6 +261,15 @@ public abstract class DataBaseDataStore implements DataStore {
 		for (String tablename : tableNames) return this.createTableMetaData(this, schema, tablename);
 		return null;
 	}
+	
+	/**
+	 * <p>DBから現在日時を取得する。</p>
+	 * DBサーバに設定された現在日時を取得する。<br/>
+	 * ORACLEで有ればSYSDATEの値を取得する。<br/>
+	 * @return 現在日時
+	 * @throws DataStoreManagerException 現在日時の取得に失敗した場合
+	 */
+	public abstract Date getDataBaseTime() throws DataStoreManagerException;
 	
 	protected abstract TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) ;
 	

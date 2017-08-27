@@ -78,11 +78,6 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 
 	@Override
 	protected void getOptions(Options options) {
-		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベース")	.withLongOpt("database").create("db"));
-		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースURL").withLongOpt("url").create("url"));
-		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースユーザ").withLongOpt("user").create("user"));
-		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースパスワード").withLongOpt("password").create("pass"));
-		
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルの状態を確認する")	.withLongOpt("info" ).create("i"));
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを作成する").withLongOpt("create").create("c"));
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを削除する").withLongOpt("drop").create("d"));

@@ -1,7 +1,9 @@
 package jp.co.dk.datastoremanager.core.rdb.mysql;
 
 import java.sql.ResultSet;
+import java.util.Date;
 
+import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseDataStore;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseRecord;
@@ -20,6 +22,12 @@ public class MySqlDataBaseDataStore extends DataBaseDataStore {
 
 	@Override
 	protected DataBaseRecord createDataBaseRecord(ResultSet resultSet) {
+		return null;
+	}
+
+	@Override
+	public Date getDataBaseTime() throws DataStoreManagerException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -1,5 +1,9 @@
 package jp.co.dk.datastoremanager.command.exporthtab;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +26,25 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 		try {
 			time = Long.parseLong(this.cmd.getOptionValue("tm")) * 1000L;
 		} catch (NumberFormatException e) {
-			System.out.println(e.toString());
+			System.out.println("tm is not number.");
+			System.exit(1);
+		}
+		
+		File outputFile = new File(this.cmd.getOptionValue("o"));
+		if (outputFile.isDirectory()) {
+			System.out.println(outputFile.toString() + " is directory.");
+			System.exit(1);
+		}
+		if (outputFile.isFile()) {
+			System.out.println(outputFile.toString() + " is exists file.");
+			System.exit(1);
+		}
+		
+		OutputStream ops = null;
+		try {
+			ops = new FileOutputStream(outputFile);
+		} catch (FileNotFoundException e1) {
+			System.out.println(outputFile.toString() + " is not found.");
 			System.exit(1);
 		}
 		
@@ -31,6 +53,7 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 			dataStore.startTransaction();
 			
 			Date dbDate = dataStore.getDataBaseTime();
+			
 			List<TableMetaData> tableMetaDataList = dataStore.getTables();
 			for (TableMetaData tableMetaData : tableMetaDataList) {
 				if (tableMetaData.isExistsHistoryTable()) {

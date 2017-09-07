@@ -47,7 +47,7 @@ public abstract class AbtractCommandControler {
 			String password = this.cmd.getOptionValue("pass");
 			String url      = this.cmd.getOptionValue("url");
 			DataBaseDriverConstants dataBaseDriverConstants = DataBaseDriverConstants.getDataBaseDriverConstants(database);
-			this.dataBaseAccessParameter = new DataBaseAccessParameter(dataBaseDriverConstants.getDataStoreKind(), dataBaseDriverConstants, user, password, url);
+			this.dataBaseAccessParameter = new DataBaseAccessParameter(dataBaseDriverConstants.getDataStoreKind(), dataBaseDriverConstants, url, user, password);
 		} catch (DataStoreManagerException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);

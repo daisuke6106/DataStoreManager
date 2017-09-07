@@ -3,7 +3,6 @@ package jp.co.dk.datastoremanager.command.createhtab;
 import java.util.List;
 
 import jp.co.dk.datastoremanager.command.AbtractCommandControler;
-import jp.co.dk.datastoremanager.core.DataBaseDriverConstants;
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseDataStore;
@@ -15,14 +14,9 @@ import org.apache.commons.cli.Options;
 public class CreateHistoryTableControler extends AbtractCommandControler {
 	
 	@Override
-	public void execute() {
+	public void execute(DataBaseAccessParameter dataBaseAccessParameter) {
 
 		try {
-			DataBaseDriverConstants driver = DataBaseDriverConstants.getDataBaseDriverConstants(this.cmd.getOptionValue("db"));
-			String url = this.cmd.getOptionValue("url");
-			String user = this.cmd.getOptionValue("user");
-			String pass = this.cmd.getOptionValue("pass");
-			DataBaseAccessParameter dataBaseAccessParameter = new DataBaseAccessParameter(driver.getDataStoreKind(), driver, url, user, pass);
 			DataBaseDataStore dataStore = (DataBaseDataStore)dataBaseAccessParameter.createDataStore();
 			dataStore.startTransaction();
 			List<TableMetaData> tableMetaDataList = dataStore.getTables();
@@ -77,7 +71,7 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 	}
 
 	@Override
-	protected void getOptions(Options options) {
+	protected void getAnyOptions(Options options) {
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルの状態を確認する")	.withLongOpt("info" ).create("i"));
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを作成する").withLongOpt("create").create("c"));
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルを削除する").withLongOpt("drop").create("d"));

@@ -200,7 +200,7 @@ class OracleHistoryTableMetaData extends HistoryTableMetaData {
 		Sql sql = new Sql("SELECT * FROM ").add(this.tableMetaData.getHistoryTableName());
 		sql.add(" WHERE");
 		sql.add(" OPTM >= ?").setParameter(targetDate);
-		sql.add(" ORDER BY OPTM ASC");
+		sql.add(" ORDER BY OPTM ASC, OPTP ASC");
 		List<HistoryTableTmpRecord> historyTableRecordList = new jp.co.dk.datastoremanager.core.rdb.AbstractDataBaseAccessObject(
 				this.tableMetaData.getDataBaseDataStore()){}.selectMulti(sql, new HistoryTableTmpRecord(this, this.tableMetaData.getColumns()));
 		

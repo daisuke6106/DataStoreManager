@@ -57,7 +57,11 @@ public class HistoryTableTmpRecord implements DataConvertable {
 		Element tr = document.createElement("tr");
 		for (Object column : columnData) {
 			Element td = document.createElement("td");
-			td.setTextContent(column.toString());
+			if (column == null) {
+				td.setTextContent("(NULL)");
+			} else {
+				td.setTextContent(column.toString());
+			}
 			tr.appendChild(td);
 		}
 		return tr;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 		
 		long time = 0 ;
 		try {
-			time = Long.parseLong(this.cmd.getOptionValue("tm")) * 1000L;
+			time = Long.parseLong(this.cmd.getOptionValue("tm")) * 60L * 1000L;
 		} catch (NumberFormatException e) {
 			System.out.println("tm is not number.");
 			System.exit(1);
@@ -36,8 +37,9 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 			System.exit(1);
 		}
 		if (outputFile.isFile()) {
-			System.out.println(outputFile.toString() + " is exists file.");
-			System.exit(1);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+			String filetimestamp = sdf.format(new Date(outputFile.lastModified()));
+			outputFile.renameTo(new File(outputFile.getAbsolutePath() + "_" + filetimestamp));
 		}
 		
 		OutputStream ops = null;
@@ -53,12 +55,31 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 			dataStore.startTransaction();
 			
 			Date dbDate = dataStore.getDataBaseTime();
+			Date targetDate = new Date( dbDate.getTime() - time );
 			
-			List<TableMetaData> tableMetaDataList = dataStore.getTables();
-			for (TableMetaData tableMetaData : tableMetaDataList) {
-				if (tableMetaData.isExistsHistoryTable()) {
-					HistoryTableRecordList historyTableRecordList = tableMetaData.getHistoryTable().getRecordAfterSpecifiedDate(new Date( dbDate.getTime() - time ));
-					historyTableRecordList.writeHtml(ops);
+			String targetTableNameList = this.cmd.getOptionValue("tbl");
+			
+			// テーブルが指定されていない場合、すべてのテーブルをエクスポートする。
+			if (targetTableNameList == null || targetTableNameList.isEmpty()) {
+				List<TableMetaData> tableMetaDataList = dataStore.getTables();
+				for (TableMetaData tableMetaData : tableMetaDataList) {
+					if (tableMetaData.isExistsHistoryTable()) {
+						HistoryTableRecordList historyTableRecordList = tableMetaData.getHistoryTable().getRecordAfterSpecifiedDate( targetDate );
+						historyTableRecordList.writeHtml(ops);
+					}
+				}
+			// テーブルが指定されている場合
+			} else {
+				List<TableMetaData> tableMetaDataList = dataStore.getTables();
+				for (String targetTableName : targetTableNameList.split(",")) {
+					for (TableMetaData tableMetaData : tableMetaDataList) {
+						if (targetTableName.toUpperCase().equals(tableMetaData.toString())) {
+							if (tableMetaData.isExistsHistoryTable()) {
+								HistoryTableRecordList historyTableRecordList = tableMetaData.getHistoryTable().getRecordAfterSpecifiedDate( targetDate );
+								historyTableRecordList.writeHtml(ops);
+							}
+						}
+					}
 				}
 			}
 		} catch (DataStoreManagerException e) {
@@ -68,7 +89,6 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 		
 	}
 	
-	
 	@Override
 	protected String getCommandName() {
 		return "exp_htab";
@@ -77,8 +97,8 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 	@Override
 	protected void getAnyOptions(Options options) {
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true).withDescription("出力先（ファイル名含む）").withLongOpt("output_file").create("o"));
-		options.addOption(OptionBuilder.isRequired(true ).hasArg(true).withDescription("取得時間(秒)")	.withLongOpt("time" ).create("tm"));
-		options.addOption(OptionBuilder.isRequired(false).hasArg(true).withDescription("取得対象テーブル").withLongOpt("target_table").create("tbl"));
+		options.addOption(OptionBuilder.isRequired(true ).hasArg(true).withDescription("取得時間(分)").withLongOpt("time" ).create("tm"));
+		options.addOption(OptionBuilder.isRequired(false).hasArg(true).withDescription("取得対象テーブル（カンマ区切り）").withLongOpt("target_table").create("tbl"));
 		
 	}
 	

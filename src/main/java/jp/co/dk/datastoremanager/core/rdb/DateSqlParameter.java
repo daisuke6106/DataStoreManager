@@ -54,7 +54,7 @@ class DateSqlParameter extends SqlParameter{
 	public String toString() {
 		if (this.parameter != null) {
 			StringBuilder sb = new StringBuilder();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			sb.append(sdf.format(this.parameter).toString()).append("(date)");
 			return sb.toString();
 		} else {

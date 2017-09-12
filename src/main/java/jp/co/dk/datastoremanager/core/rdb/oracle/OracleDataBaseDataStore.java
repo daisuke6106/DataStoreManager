@@ -47,7 +47,7 @@ public class OracleDataBaseDataStore extends DataBaseDataStore {
 		try {
 			ResultSet rs = this.select(sql);
 			rs.next();
-			return rs.getDate("SYSDATE");
+			return rs.getTimestamp("SYSDATE");
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(FAILE_TO_GET_SYSDATE, e);
 		}

@@ -13,11 +13,14 @@ public class HistoryTableInsertRecord extends HistoryTableRecord {
 
 	@Override
 	Element createBeforeTrRecord(Document document) {
-		return this.historyTableInsertRecord.createBrankTrRecord(document, "nothing");
+		Element leftTd = document.createElement("td");
+		leftTd.setTextContent("INESRT");
+		leftTd.setAttribute("rowspan", "2");
+		return this.historyTableInsertRecord.createBrankTrRecord(document, "nothing", leftTd);
 	}
 
 	@Override
 	Element createAfterTrRecord(Document document) {
-		return this.historyTableInsertRecord.createTrRecord(document);
+		return this.historyTableInsertRecord.createTrRecord(document, null);
 	}
 }

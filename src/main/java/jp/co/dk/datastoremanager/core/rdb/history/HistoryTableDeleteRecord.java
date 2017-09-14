@@ -13,12 +13,15 @@ public class HistoryTableDeleteRecord extends HistoryTableRecord {
 
 	@Override
 	Element createBeforeTrRecord(Document document) {
-		return this.historyTableDeleteRecord.createTrRecord(document);
+		Element leftTd = document.createElement("td");
+		leftTd.setTextContent("DELETE");
+		leftTd.setAttribute("rowspan", "2");
+		return this.historyTableDeleteRecord.createTrRecord(document, leftTd);
 	}
 
 	@Override
 	Element createAfterTrRecord(Document document) {
-		return this.historyTableDeleteRecord.createBrankTrRecord(document, "deleted");
+		return this.historyTableDeleteRecord.createBrankTrRecord(document, "deleted", null);
 	}
 
 }

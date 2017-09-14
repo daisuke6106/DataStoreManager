@@ -66,7 +66,11 @@ public class OracleHistoryTableMetaDataTest extends DataStoreManagerTestFoundati
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder        docbuilder             = documentBuilderFactory.newDocumentBuilder();
 		Document               document               = docbuilder.newDocument();
-		Element tr = this.target.createTrHeader(document);
+		
+		Element leftTd = document.createElement("td");
+		leftTd.setTextContent("INS/UPD/DEL");
+		
+		Element tr = this.target.createTrHeader(document, leftTd);
 		assertThat(tr, notNullValue());
 	}
 	

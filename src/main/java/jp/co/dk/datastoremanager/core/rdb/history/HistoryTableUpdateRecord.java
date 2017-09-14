@@ -16,12 +16,15 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 
 	@Override
 	Element createBeforeTrRecord(Document document) {
-		return this.historyTableUpdateFromRecord.createTrRecord(document);
+		Element leftTd = document.createElement("td");
+		leftTd.setTextContent("UPDATE");
+		leftTd.setAttribute("rowspan", "2");
+		return this.historyTableUpdateFromRecord.createTrRecord(document, leftTd);
 	}
 
 	@Override
 	Element createAfterTrRecord(Document document) {
-		return this.historyTableUpdateToRecord.createTrRecord(document);
+		return this.historyTableUpdateToRecord.createTrRecord(document, null);
 	}
 
 }

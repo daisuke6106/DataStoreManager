@@ -58,19 +58,20 @@ public class HistoryTableRecordList {
 			titleElement.setTextContent(this.historyTableMetaData.getTableMetaData().toString());
 			htmlElement.appendChild(titleElement);
 			
-			
 			// カラム出力
-			Element trHeader = this.historyTableMetaData.createTrHeader(document);
+			Element leftTd = document.createElement("td");
+			leftTd.setTextContent("INS/UPD/DEL");
+			Element trHeader = this.historyTableMetaData.createTrHeader(document, leftTd);
 			
 			// データ出力
+			Element tableElement = document.createElement("table");
+			tableElement.setAttribute("border", "1");
+			tableElement.appendChild(trHeader.cloneNode(true));
 			for (HistoryTableRecord historyTableRecord : historyTableRecordList) {
-				Element tableElement = document.createElement("table");
-				tableElement.setAttribute("border", "1");
-				tableElement.appendChild(trHeader.cloneNode(true));
 				tableElement.appendChild(historyTableRecord.createBeforeTrRecord(document));
 				tableElement.appendChild(historyTableRecord.createAfterTrRecord(document));
-				htmlElement.appendChild(tableElement);
 			}
+			htmlElement.appendChild(tableElement);
 			
             TransformerFactory tfactory = TransformerFactory.newInstance();
             Transformer transformer = tfactory.newTransformer();

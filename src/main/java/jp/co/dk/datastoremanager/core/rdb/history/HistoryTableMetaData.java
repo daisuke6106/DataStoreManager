@@ -24,10 +24,11 @@ public abstract class HistoryTableMetaData {
 
 	public abstract HistoryTableRecordList getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException;
 	
-	public Element createTrHeader(Document document) {
+	public Element createTrHeader(Document document, Element leftTd) {
 		
 		try {
 			Element tr = document.createElement("tr");
+			if (leftTd != null) tr.appendChild(leftTd);
 			for (ColumnMetaData columnMetaData : this.tableMetaData.getColumns()) {
 				Element th = document.createElement("th");
 				th.setTextContent(columnMetaData.getColumnname());

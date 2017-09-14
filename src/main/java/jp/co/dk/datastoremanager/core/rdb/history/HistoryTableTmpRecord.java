@@ -53,8 +53,9 @@ public class HistoryTableTmpRecord implements DataConvertable {
 		return new HistoryTableTmpRecord(this.historyTableMetaData, this.columnList, operationTime, operationType, columnData);
 	}
 	
-	Element createTrRecord(Document document) {
+	Element createTrRecord(Document document, Element leftTd) {
 		Element tr = document.createElement("tr");
+		if (leftTd != null) tr.appendChild(leftTd);
 		for (Object column : columnData) {
 			Element td = document.createElement("td");
 			if (column == null) {
@@ -67,8 +68,9 @@ public class HistoryTableTmpRecord implements DataConvertable {
 		return tr;
 	}
 	
-	Element createBrankTrRecord(Document document, String dispStr) {
+	Element createBrankTrRecord(Document document, String dispStr, Element leftTd) {
 		Element tr = document.createElement("tr");
+		if (leftTd != null) tr.appendChild(leftTd);
 		Element td = document.createElement("td");
 		td.setTextContent(dispStr);
 		td.setAttribute("colspan", Integer.toString(this.columnList.size()));

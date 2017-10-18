@@ -53,9 +53,9 @@ public class HistoryTableTmpRecord implements DataConvertable {
 		return new HistoryTableTmpRecord(this.historyTableMetaData, this.columnList, operationTime, operationType, columnData);
 	}
 	
-	Element createTrRecord(Document document, Element leftTd) {
+	Element createTrRecord(Document document, AddHistoryTrRecord addHistoryTrRecord) {
 		Element tr = document.createElement("tr");
-		if (leftTd != null) tr.appendChild(leftTd);
+		if (addHistoryTrRecord != null) addHistoryTrRecord.addLeftSideTd(document, tr);
 		for (Object column : columnData) {
 			Element td = document.createElement("td");
 			if (column == null) {
@@ -65,16 +65,18 @@ public class HistoryTableTmpRecord implements DataConvertable {
 			}
 			tr.appendChild(td);
 		}
+		if (addHistoryTrRecord != null) addHistoryTrRecord.addRightSideTd(document, tr);
 		return tr;
 	}
 	
-	Element createBrankTrRecord(Document document, String dispStr, Element leftTd) {
+	Element createBrankTrRecord(Document document, String dispStr, AddHistoryTrRecord addHistoryTrRecord) {
 		Element tr = document.createElement("tr");
-		if (leftTd != null) tr.appendChild(leftTd);
+		if (addHistoryTrRecord != null) addHistoryTrRecord.addLeftSideTd(document, tr);
 		Element td = document.createElement("td");
 		td.setTextContent(dispStr);
 		td.setAttribute("colspan", Integer.toString(this.columnList.size()));
 		tr.appendChild(td);
+		if (addHistoryTrRecord != null) addHistoryTrRecord.addRightSideTd(document, tr);
 		return tr;
 	}
 }

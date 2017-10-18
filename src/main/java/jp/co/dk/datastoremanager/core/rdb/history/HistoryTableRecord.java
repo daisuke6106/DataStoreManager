@@ -8,4 +8,5 @@ public abstract class HistoryTableRecord {
 	abstract Element createBeforeTrRecord(Document document);
 	
 	abstract Element createAfterTrRecord(Document document);
+	
 }

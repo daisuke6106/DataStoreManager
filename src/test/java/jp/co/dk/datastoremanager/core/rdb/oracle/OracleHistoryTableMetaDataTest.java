@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import jp.co.dk.datastoremanager.core.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.TableMetaData;
+import jp.co.dk.datastoremanager.core.rdb.history.AddHistoryTrRecord;
 import jp.co.dk.datastoremanager.core.rdb.history.HistoryTableMetaData;
 import jp.co.dk.datastoremanager.core.rdb.history.HistoryTableRecordList;
 import jp.co.dk.datastoremanager.core.rdb.oracle.OracleDataBaseDataStore;
@@ -70,7 +71,14 @@ public class OracleHistoryTableMetaDataTest extends DataStoreManagerTestFoundati
 		Element leftTd = document.createElement("td");
 		leftTd.setTextContent("INS/UPD/DEL");
 		
-		Element tr = this.target.createTrHeader(document, leftTd);
+		Element tr = this.target.createTrHeader(document, new AddHistoryTrRecord() {
+			@Override
+			public void addLeftSideTd(Document document, Element trElement) {
+			}
+			@Override
+			public void addRightSideTd(Document document, Element trElement) {
+			}
+		});
 		assertThat(tr, notNullValue());
 	}
 	

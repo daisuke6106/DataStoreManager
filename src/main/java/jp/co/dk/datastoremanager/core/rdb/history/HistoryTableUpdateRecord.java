@@ -16,15 +16,42 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 
 	@Override
 	Element createBeforeTrRecord(Document document) {
-		Element leftTd = document.createElement("td");
-		leftTd.setTextContent("UPDATE");
-		leftTd.setAttribute("rowspan", "2");
-		return this.historyTableUpdateFromRecord.createTrRecord(document, leftTd);
+		return this.historyTableUpdateFromRecord.createTrRecord(document, new AddHistoryTrRecord() {
+			@Override
+			public void addLeftSideTd(Document document, Element trElement) {
+				Element opeTimeTd = document.createElement("td");
+				opeTimeTd.setAttribute("rowspan", "2");
+				opeTimeTd.setTextContent(historyTableUpdateFromRecord.getOperationTime().toString());
+				trElement.appendChild(opeTimeTd);
+				
+				Element kindTd = document.createElement("td");
+				kindTd.setTextContent(historyTableUpdateFromRecord.getOperationType().toString());
+				trElement.appendChild(kindTd);
+			}
+			@Override
+			public void addRightSideTd(Document document, Element trElement) {
+			}
+		});
 	}
 
 	@Override
 	Element createAfterTrRecord(Document document) {
-		return this.historyTableUpdateToRecord.createTrRecord(document, null);
+		return this.historyTableUpdateToRecord.createTrRecord(document, new AddHistoryTrRecord() {
+			@Override
+			public void addLeftSideTd(Document document, Element trElement) {
+				// Element opeTimeTd = document.createElement("td");
+				// opeTimeTd.setAttribute("rowspan", "2");
+				// opeTimeTd.setTextContent(historyTableUpdateToRecord.getOperationTime().toString());
+				// trElement.appendChild(opeTimeTd);
+				
+				Element kindTd = document.createElement("td");
+				kindTd.setTextContent(historyTableUpdateToRecord.getOperationType().toString());
+				trElement.appendChild(kindTd);
+			}
+			@Override
+			public void addRightSideTd(Document document, Element trElement) {
+			}
+		});
 	}
 
 }

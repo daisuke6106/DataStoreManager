@@ -24,16 +24,17 @@ public abstract class HistoryTableMetaData {
 
 	public abstract HistoryTableRecordList getRecordAfterSpecifiedDate(Date targetDate) throws DataStoreManagerException;
 	
-	public Element createTrHeader(Document document, Element leftTd) {
+	public Element createTrHeader(Document document, AddHistoryTrRecord addHistoryTrRecord) {
 		
 		try {
 			Element tr = document.createElement("tr");
-			if (leftTd != null) tr.appendChild(leftTd);
+			if (addHistoryTrRecord != null) addHistoryTrRecord.addLeftSideTd(document, tr);
 			for (ColumnMetaData columnMetaData : this.tableMetaData.getColumns()) {
 				Element th = document.createElement("th");
 				th.setTextContent(columnMetaData.getColumnname());
 				tr.appendChild(th);
 			}
+			if (addHistoryTrRecord != null) addHistoryTrRecord.addRightSideTd(document, tr);
 			return tr;
 		} catch (DataStoreManagerException | DOMException e) {
 			return null;

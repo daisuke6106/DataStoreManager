@@ -13,15 +13,34 @@ public class HistoryTableDeleteRecord extends HistoryTableRecord {
 
 	@Override
 	Element createBeforeTrRecord(Document document) {
-		Element leftTd = document.createElement("td");
-		leftTd.setTextContent("DELETE");
-		leftTd.setAttribute("rowspan", "2");
-		return this.historyTableDeleteRecord.createTrRecord(document, leftTd);
+		return this.historyTableDeleteRecord.createTrRecord(document, new AddHistoryTrRecord() {
+			@Override
+			public void addLeftSideTd(Document document, Element trElement) {
+				Element opeTimeTd = document.createElement("td");
+				opeTimeTd.setTextContent(historyTableDeleteRecord.getOperationTime().toString());
+				opeTimeTd.setAttribute("rowspan", "2");
+				trElement.appendChild(opeTimeTd);
+				Element kindTd = document.createElement("td");
+				kindTd.setTextContent(historyTableDeleteRecord.getOperationType().toString());
+				kindTd.setAttribute("rowspan", "2");
+				trElement.appendChild(kindTd);
+			}
+			@Override
+			public void addRightSideTd(Document document, Element trElement) {
+			}
+		});
 	}
 
 	@Override
 	Element createAfterTrRecord(Document document) {
-		return this.historyTableDeleteRecord.createBrankTrRecord(document, "deleted", null);
+		return this.historyTableDeleteRecord.createBrankTrRecord(document, "deleted", new AddHistoryTrRecord() {
+			@Override
+			public void addLeftSideTd(Document document, Element trElement) {
+			}
+			@Override
+			public void addRightSideTd(Document document, Element trElement) {
+			}
+		});
 	}
 
 }

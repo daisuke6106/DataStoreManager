@@ -59,17 +59,33 @@ public class HistoryTableRecordList {
 			htmlElement.appendChild(titleElement);
 			
 			// カラム出力
-			Element leftTd = document.createElement("td");
-			leftTd.setTextContent("INS/UPD/DEL");
-			Element trHeader = this.historyTableMetaData.createTrHeader(document, leftTd);
+			Element kinfTd = document.createElement("td");
+			kinfTd.setTextContent("INS/UPD/DEL");
+			Element trHeader = this.historyTableMetaData.createTrHeader(document, new AddHistoryTrRecord() {
+				@Override
+				public void addLeftSideTd(Document document, Element trElement) {
+					Element opeTimeTd = document.createElement("td");
+					opeTimeTd.setTextContent("OPERATION TIME");
+					trElement.appendChild(opeTimeTd);
+					Element kindTd = document.createElement("td");
+					kindTd.setTextContent("INS/UPD/DLT");
+					trElement.appendChild(kindTd);
+				}
+				@Override
+				public void addRightSideTd(Document document, Element trElement) {
+				}
+			});
 			
 			// データ出力
 			Element tableElement = document.createElement("table");
 			tableElement.setAttribute("border", "1");
 			tableElement.appendChild(trHeader.cloneNode(true));
 			for (HistoryTableRecord historyTableRecord : historyTableRecordList) {
-				tableElement.appendChild(historyTableRecord.createBeforeTrRecord(document));
-				tableElement.appendChild(historyTableRecord.createAfterTrRecord(document));
+				Element beforeTrRecord = historyTableRecord.createBeforeTrRecord(document);
+				if (beforeTrRecord != null) tableElement.appendChild(beforeTrRecord);
+				
+				Element afterTrRecord = historyTableRecord.createAfterTrRecord(document);
+				if (afterTrRecord != null) tableElement.appendChild(afterTrRecord);
 			}
 			htmlElement.appendChild(tableElement);
 			

@@ -17,11 +17,11 @@ public class HistoryTableDeleteRecord extends HistoryTableRecord {
 			@Override
 			public void addLeftSideTd(Document document, Element trElement) {
 				Element opeTimeTd = document.createElement("td");
-				opeTimeTd.setTextContent(historyTableDeleteRecord.getOperationTime().toString());
+				opeTimeTd.setTextContent(DateFormat.YYYYMMDD_HH24MISS.parse(historyTableDeleteRecord.getOperationTime()));
 				opeTimeTd.setAttribute("rowspan", "2");
 				trElement.appendChild(opeTimeTd);
 				Element kindTd = document.createElement("td");
-				kindTd.setTextContent(historyTableDeleteRecord.getOperationType().toString());
+				kindTd.setTextContent(historyTableDeleteRecord.getOperationType().getName());
 				kindTd.setAttribute("rowspan", "2");
 				trElement.appendChild(kindTd);
 			}

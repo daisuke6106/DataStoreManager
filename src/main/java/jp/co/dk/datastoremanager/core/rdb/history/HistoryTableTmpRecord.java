@@ -1,5 +1,6 @@
 package jp.co.dk.datastoremanager.core.rdb.history;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,7 @@ public class HistoryTableTmpRecord implements DataConvertable {
 	}
 	
 	public DataConvertable convert(DataBaseRecord dataBaseRecord) throws DataStoreManagerException {
-		Date          operationTime = dataBaseRecord.getDate("OPTM");
+		Date          operationTime = dataBaseRecord.getTimestamp("OPTM");
 		OperationType operationType = OperationType.valueOf( dataBaseRecord.getString("OPTP") );
 		List<Object> columnData = new ArrayList<>();
 		for (ColumnMetaData column : columnList) columnData.add(column.getData(dataBaseRecord));

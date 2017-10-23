@@ -21,11 +21,11 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 			public void addLeftSideTd(Document document, Element trElement) {
 				Element opeTimeTd = document.createElement("td");
 				opeTimeTd.setAttribute("rowspan", "2");
-				opeTimeTd.setTextContent(historyTableUpdateFromRecord.getOperationTime().toString());
+				opeTimeTd.setTextContent(DateFormat.YYYYMMDD_HH24MISS.parse(historyTableUpdateFromRecord.getOperationTime()));
 				trElement.appendChild(opeTimeTd);
 				
 				Element kindTd = document.createElement("td");
-				kindTd.setTextContent(historyTableUpdateFromRecord.getOperationType().toString());
+				kindTd.setTextContent(historyTableUpdateFromRecord.getOperationType().getName());
 				trElement.appendChild(kindTd);
 			}
 			@Override
@@ -45,7 +45,7 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 				// trElement.appendChild(opeTimeTd);
 				
 				Element kindTd = document.createElement("td");
-				kindTd.setTextContent(historyTableUpdateToRecord.getOperationType().toString());
+				kindTd.setTextContent(historyTableUpdateToRecord.getOperationType().getName());
 				trElement.appendChild(kindTd);
 			}
 			@Override

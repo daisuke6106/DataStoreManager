@@ -17,12 +17,12 @@ public class HistoryTableInsertRecord extends HistoryTableRecord {
 			@Override
 			public void addLeftSideTd(Document document, Element trElement) {
 				Element opeTimeTd = document.createElement("td");
-				opeTimeTd.setTextContent(historyTableInsertRecord.getOperationTime().toString());
+				opeTimeTd.setTextContent(DateFormat.YYYYMMDD_HH24MISS.parse(historyTableInsertRecord.getOperationTime()));
 				opeTimeTd.setAttribute("rowspan", "2");
 				trElement.appendChild(opeTimeTd);
 				Element kindTd = document.createElement("td");
 				kindTd.setAttribute("rowspan", "2");
-				kindTd.setTextContent(historyTableInsertRecord.getOperationType().toString());
+				kindTd.setTextContent(historyTableInsertRecord.getOperationType().getName());
 				trElement.appendChild(kindTd);
 			}
 			@Override

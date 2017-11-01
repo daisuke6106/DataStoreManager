@@ -3,6 +3,7 @@ package jp.co.dk.datastoremanager.core.rdb;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -87,9 +88,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return 文字列
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public String getString(String column) throws DataStoreManagerException {
+	public StringColumnData getString(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getString(column);
+			return new StringColumnData( this.resultSet.getString(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
@@ -102,9 +103,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return 数値
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public int getInt(String column) throws DataStoreManagerException {
+	public IntColumnData getInt(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getInt(column);
+			return new IntColumnData( this.resultSet.getInt(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
@@ -132,9 +133,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return 数値
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public long getLong(String column) throws DataStoreManagerException {
+	public LongColumnData getLong(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getLong(column);
+			return new LongColumnData( this.resultSet.getLong(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
@@ -147,9 +148,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return 日付
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public java.util.Date getDate(String column) throws DataStoreManagerException {
+	public DateColumnData getDate(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getDate(column);
+			return new DateColumnData( this.resultSet.getDate(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
@@ -162,9 +163,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return タイムスタンプ
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public java.util.Date getTimestamp(String column) throws DataStoreManagerException {
+	public TimestampColumnData getTimestamp(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getTimestamp(column);
+			return new TimestampColumnData( this.resultSet.getTimestamp(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
@@ -177,9 +178,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return バイト配列
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public byte[] getBytes(String column) throws DataStoreManagerException {
+	public BytesColumnData getBytes(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getBytes(column);
+			return new BytesColumnData( this.resultSet.getBytes(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
@@ -192,14 +193,14 @@ public abstract class DataBaseRecord implements Record {
 	 * @return オブジェクト
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public Object getObject(String column) throws DataStoreManagerException {
+	public ObjectColumnData getObject(String column) throws DataStoreManagerException {
 		byte[] bytes = null;
 		try {
 			bytes = this.resultSet.getBytes(column);
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}
-		return this.convertBytesToObject(bytes);
+		return new ObjectColumnData( (Serializable)this.convertBytesToObject(bytes) );
 	}
 	
 	@Override

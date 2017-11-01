@@ -4,8 +4,8 @@ import java.sql.PreparedStatement;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 
-abstract class SqlParameter {
+interface SqlParameter {
 	
-	abstract void set(int index, PreparedStatement statement) throws DataStoreManagerException;
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException;
 	
 }

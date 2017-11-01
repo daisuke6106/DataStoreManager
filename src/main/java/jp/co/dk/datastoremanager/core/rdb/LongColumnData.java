@@ -6,19 +6,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.LongSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.LongColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
 
-class LongSqlParameter extends SqlParameter{
+public class LongColumnData implements ColumnData, SqlParameter{
 	
 	protected long parameter;
 	
-	LongSqlParameter(long parameter) {
+	LongColumnData(long parameter) {
 		this.parameter = parameter;
 	}
 
 	@Override
-	void set(int index, PreparedStatement statement) throws DataStoreManagerException {
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
 			statement.setLong(index, this.parameter);
 		} catch (SQLException e) {
@@ -29,8 +29,8 @@ class LongSqlParameter extends SqlParameter{
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof LongSqlParameter)) return false;
-		LongSqlParameter thisClassObj = (LongSqlParameter) object;
+		if (!(object instanceof LongColumnData)) return false;
+		LongColumnData thisClassObj = (LongColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}

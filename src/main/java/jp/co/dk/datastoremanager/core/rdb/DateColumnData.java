@@ -8,19 +8,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.DateSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.DateColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
 
-class DateSqlParameter extends SqlParameter{
+public class DateColumnData implements ColumnData, SqlParameter{
 	
 	protected Date parameter;
 	
-	DateSqlParameter(Date parameter) {
+	DateColumnData(Date parameter) {
 		this.parameter = parameter;
 	}
 
 	@Override
-	void set(int index, PreparedStatement statement) throws DataStoreManagerException {
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
 			if (this.parameter != null) {
 				statement.setDate(index, new java.sql.Date(this.parameter.getTime()));
@@ -35,8 +35,8 @@ class DateSqlParameter extends SqlParameter{
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof DateSqlParameter)) return false;
-		DateSqlParameter thisClassObj = (DateSqlParameter) object;
+		if (!(object instanceof DateColumnData)) return false;
+		DateColumnData thisClassObj = (DateColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}

@@ -7,15 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.BytesSqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.DateSqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.IntSqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.LongSqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.ObjectSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.BytesColumnData;
+import jp.co.dk.datastoremanager.core.rdb.DateColumnData;
+import jp.co.dk.datastoremanager.core.rdb.IntColumnData;
+import jp.co.dk.datastoremanager.core.rdb.LongColumnData;
+import jp.co.dk.datastoremanager.core.rdb.ObjectColumnData;
 import jp.co.dk.datastoremanager.core.rdb.Sql;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.StringSqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.TimestampSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.StringColumnData;
+import jp.co.dk.datastoremanager.core.rdb.TimestampColumnData;
 import static jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage.*;
 
 /**
@@ -73,7 +73,7 @@ public class Sql {
 	 * @param parameter SQLの？部分にあたる文字列
 	 */
 	public Sql setParameter(String parameter) {
-		this.sqlParameter.add(new StringSqlParameter(parameter));
+		this.sqlParameter.add(new StringColumnData(parameter));
 		return this;
 	}
 	
@@ -85,7 +85,7 @@ public class Sql {
 	 */
 	@SuppressWarnings("rawtypes")
 	public Sql setParameter(Enum parameter) {
-		this.sqlParameter.add(new StringSqlParameter(parameter.toString()));
+		this.sqlParameter.add(new StringColumnData(parameter.toString()));
 		return this;
 	}
 	
@@ -95,7 +95,7 @@ public class Sql {
 	 * @param parameter SQLの？部分にあたる数値(int)
 	 */
 	public Sql setParameter(int parameter) {
-		this.sqlParameter.add(new IntSqlParameter(parameter));
+		this.sqlParameter.add(new IntColumnData(parameter));
 		return this;
 	}
 	
@@ -105,7 +105,7 @@ public class Sql {
 	 * @param parameter SQLの？部分にあたる数値(long)
 	 */
 	public Sql setParameter(long parameter) {
-		this.sqlParameter.add(new LongSqlParameter(parameter));
+		this.sqlParameter.add(new LongColumnData(parameter));
 		return this;
 	}
 	
@@ -115,7 +115,7 @@ public class Sql {
 	 * @param parameter SQLの？部分にあたる日付
 	 */
 	public Sql setParameter(Date parameter) {
-		this.sqlParameter.add(new DateSqlParameter(parameter));
+		this.sqlParameter.add(new DateColumnData(parameter));
 		return this;
 	}
 	
@@ -126,7 +126,7 @@ public class Sql {
 	 * @throws DataStoreManagerException 設定されたパラメータがnullの場合
 	 */
 	public Sql setParameter(Timestamp parameter) {
-		this.sqlParameter.add(new TimestampSqlParameter(parameter));
+		this.sqlParameter.add(new TimestampColumnData(parameter));
 		return this;
 	}
 	
@@ -136,7 +136,7 @@ public class Sql {
 	 * @param parameter SQLの？部分にあたるバイト配列
 	 */
 	public Sql setParameter(byte[] parameter) {
-		this.sqlParameter.add(new BytesSqlParameter(parameter));
+		this.sqlParameter.add(new BytesColumnData(parameter));
 		return this;
 	}
 	
@@ -149,7 +149,7 @@ public class Sql {
 	 * @param parameter SQLの？部分にあたるバイト配列
 	 */
 	public Sql setParameter(Serializable parameter) {
-		this.sqlParameter.add(new ObjectSqlParameter(parameter));
+		this.sqlParameter.add(new ObjectColumnData(parameter));
 		return this;
 	}
 	
@@ -161,7 +161,7 @@ public class Sql {
 	 * @throws DataStoreManagerException 設定されたパラメータがnullの場合
 	 */
 	public Sql setParameterConvertToBytes(Object parameter) throws DataStoreManagerException{
-		this.sqlParameter.add(new BytesSqlParameter(parameter));
+		this.sqlParameter.add(new BytesColumnData(parameter));
 		return this;
 	}
 	

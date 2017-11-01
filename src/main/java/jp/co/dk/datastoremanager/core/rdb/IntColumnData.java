@@ -6,19 +6,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.IntSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.IntColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
 
-class IntSqlParameter extends SqlParameter{
+public class IntColumnData implements ColumnData, SqlParameter{
 	
 	protected int parameter;
 	
-	IntSqlParameter(int parameter) {
+	IntColumnData(int parameter) {
 		this.parameter = parameter;
 	}
 
 	@Override
-	void set(int index, PreparedStatement statement) throws DataStoreManagerException {
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
 			statement.setInt(index, this.parameter);
 		} catch (SQLException e) {
@@ -29,8 +29,8 @@ class IntSqlParameter extends SqlParameter{
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof IntSqlParameter)) return false;
-		IntSqlParameter thisClassObj = (IntSqlParameter) object;
+		if (!(object instanceof IntColumnData)) return false;
+		IntColumnData thisClassObj = (IntColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}

@@ -7,19 +7,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.ObjectSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.ObjectColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
 
-class ObjectSqlParameter extends SqlParameter{
+public class ObjectColumnData implements ColumnData, SqlParameter{
 	
 	protected Serializable parameter;
 	
-	ObjectSqlParameter(Serializable parameter) {
+	ObjectColumnData(Serializable parameter) {
 		this.parameter = parameter;
 	} 
 
 	@Override
-	void set(int index, PreparedStatement statement) throws DataStoreManagerException {
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
 			if (this.parameter != null) {
 				statement.setObject(index, this.parameter);
@@ -34,8 +34,8 @@ class ObjectSqlParameter extends SqlParameter{
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof ObjectSqlParameter)) return false;
-		ObjectSqlParameter thisClassObj = (ObjectSqlParameter) object;
+		if (!(object instanceof ObjectColumnData)) return false;
+		ObjectColumnData thisClassObj = (ObjectColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}

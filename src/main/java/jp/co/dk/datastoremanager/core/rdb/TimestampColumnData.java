@@ -4,37 +4,42 @@ import static jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage.*;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.StringSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.TimestampColumnData;
 
-class StringSqlParameter extends SqlParameter{
+public class TimestampColumnData implements ColumnData, SqlParameter{
 	
-	protected String parameter;
+	protected Timestamp parameter;
 	
-	StringSqlParameter(String parameter) {
+	TimestampColumnData(Timestamp parameter) {
 		this.parameter = parameter;
 	} 
 
 	@Override
-	void set(int index, PreparedStatement statement) throws DataStoreManagerException {
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
-			if (this.parameter != null) { 
-				statement.setString(index, this.parameter);
+			if (this.parameter != null) {
+				statement.setTimestamp(index, this.parameter);
 			} else {
-				statement.setString(index, null);
+				statement.setTimestamp(index, null);
 			}
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(AN_EXCEPTION_OCCURRED_WHEN_PERFORMING_THE_SET_PARAMETERS_TO_SQL, e);
 		}
 	}
 	
+	public Timestamp get() {
+		return this.parameter;
+	}
+	
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof StringSqlParameter)) return false;
-		StringSqlParameter thisClassObj = (StringSqlParameter) object;
+		if (!(object instanceof TimestampColumnData)) return false;
+		TimestampColumnData thisClassObj = (TimestampColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}
@@ -52,10 +57,11 @@ class StringSqlParameter extends SqlParameter{
 	public String toString() {
 		if (this.parameter != null) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(this.parameter).append("(string)");
+			sb.append(this.parameter).append("(timestamp)");
 			return sb.toString();
 		} else {
-			return "null(string)";
+			return "null(timestamp)";
 		}
+		
 	}
 }

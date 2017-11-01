@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.text.ParseException;
 
 import jp.co.dk.datastoremanager.core.DataStoreManagerTestFoundation;
-import jp.co.dk.datastoremanager.core.rdb.StringSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.StringColumnData;
 import mockit.Expectations;
 
 import org.junit.Before;
@@ -28,11 +28,11 @@ public class StringSqlParameterTest {
 	
 	public static class 引数がＮＵＬＬの場合 extends DataStoreManagerTestFoundation{
 		
-		protected StringSqlParameter sut;
+		protected StringColumnData sut;
 		
 		@Before
 		public void init() {
-			this.sut = new StringSqlParameter(null);
+			this.sut = new StringColumnData(null);
 			assertThat(this.sut.parameter, nullValue());
 		}
 		

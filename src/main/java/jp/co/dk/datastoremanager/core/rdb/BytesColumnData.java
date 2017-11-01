@@ -9,18 +9,18 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.BytesSqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.BytesColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
 
-class BytesSqlParameter extends SqlParameter{
+public class BytesColumnData implements ColumnData, SqlParameter {
 	
 	protected byte[] parameter;
 	
-	BytesSqlParameter(byte[] parameter) {
+	BytesColumnData(byte[] parameter) {
 		this.parameter = parameter;
 	} 
 	
-	BytesSqlParameter(Object parameter) throws DataStoreManagerException {
+	BytesColumnData(Object parameter) throws DataStoreManagerException {
 		if (parameter != null) {
 			try {
 				ByteArrayOutputStream baos= new ByteArrayOutputStream();  
@@ -36,7 +36,7 @@ class BytesSqlParameter extends SqlParameter{
 	}
 
 	@Override
-	void set(int index, PreparedStatement statement) throws DataStoreManagerException {
+	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
 			if (this.parameter != null) {
 				statement.setBytes(index, this.parameter);
@@ -51,8 +51,8 @@ class BytesSqlParameter extends SqlParameter{
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof BytesSqlParameter)) return false;
-		BytesSqlParameter thisClassObj = (BytesSqlParameter) object;
+		if (!(object instanceof BytesColumnData)) return false;
+		BytesColumnData thisClassObj = (BytesColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}

@@ -1,12 +1,10 @@
 package jp.co.dk.datastoremanager.core.testdbaccessobjects.rdb;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseRecord;
 import jp.co.dk.datastoremanager.core.rdb.DataConvertable;
-import jp.co.dk.datastoremanager.core.rdb.Record;
 
 /**
  * ユーザテーブルのレコードオブジェクト
@@ -68,14 +66,14 @@ public class UsersRecord implements DataConvertable {
 	@Override
 	public DataConvertable convert(DataBaseRecord dataBaseRecord) throws DataStoreManagerException {
 		UsersRecord usersRecord = new UsersRecord();
-		usersRecord.stringData       = dataBaseRecord.getString("STRING_DATA");
-		usersRecord.intData          = dataBaseRecord.getInt("INT_DATA");
-		usersRecord.longData         = dataBaseRecord.getLong("LONG_DATA");
-		usersRecord.dateData         = dataBaseRecord.getDate("DATE_DATA");
-		usersRecord.timestampData    = dataBaseRecord.getTimestamp("TIMESTAMP_DATA");
-		usersRecord.bytesData        = dataBaseRecord.getBytes("BYTES_DATA");
-		usersRecord.serializableData = dataBaseRecord.getObject("OBJECT_DATA");
-		usersRecord.objectData       = dataBaseRecord.getObject("CONVERTBYTES_DATA");
+		usersRecord.stringData       = dataBaseRecord.getString("STRING_DATA").get();
+		usersRecord.intData          = dataBaseRecord.getInt("INT_DATA").get();
+		usersRecord.longData         = dataBaseRecord.getLong("LONG_DATA").get();
+		usersRecord.dateData         = dataBaseRecord.getDate("DATE_DATA").get();
+		usersRecord.timestampData    = dataBaseRecord.getTimestamp("TIMESTAMP_DATA").get();
+		usersRecord.bytesData        = dataBaseRecord.getBytes("BYTES_DATA").get();
+		usersRecord.serializableData = dataBaseRecord.getObject("OBJECT_DATA").get();
+		usersRecord.objectData       = dataBaseRecord.getObject("CONVERTBYTES_DATA").get();
 		return usersRecord;
 	}
 }

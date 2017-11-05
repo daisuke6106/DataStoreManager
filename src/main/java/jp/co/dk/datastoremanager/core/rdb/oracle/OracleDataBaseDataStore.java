@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.core.rdb.ColumnData;
 import jp.co.dk.datastoremanager.core.rdb.ColumnMetaData;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseDataStore;
@@ -219,7 +220,7 @@ class OracleColumnMetaData extends ColumnMetaData {
 	}
 	
 	@Override
-	public Object getData(DataBaseRecord record) throws DataStoreManagerException {
+	public ColumnData getData(DataBaseRecord record) throws DataStoreManagerException {
 		
 		switch (columnIntType) {
 			// === CHAR ===

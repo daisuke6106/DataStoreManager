@@ -2,29 +2,30 @@ package jp.co.dk.datastoremanager.core.rdb;
 
 import static jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage.AN_EXCEPTION_OCCURRED_WHEN_PERFORMING_THE_SET_PARAMETERS_TO_SQL;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
-import jp.co.dk.datastoremanager.core.rdb.IntColumnData;
+import jp.co.dk.datastoremanager.core.rdb.BigDecimalColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
 
-public class IntColumnData implements ColumnData, SqlParameter{
+public class BigDecimalColumnData implements ColumnData, SqlParameter{
 	
-	protected int parameter;
+	protected BigDecimal parameter;
 	
-	IntColumnData(int parameter) {
+	BigDecimalColumnData(BigDecimal parameter) {
 		this.parameter = parameter;
 	}
 
-	public int get() {
+	public BigDecimal get() {
 		return this.parameter;
 	}
 	
 	@Override
 	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
-			statement.setInt(index, this.parameter);
+			statement.setBigDecimal(index, this.parameter);
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(AN_EXCEPTION_OCCURRED_WHEN_PERFORMING_THE_SET_PARAMETERS_TO_SQL, e);
 		}
@@ -38,21 +39,25 @@ public class IntColumnData implements ColumnData, SqlParameter{
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
-		if (!(object instanceof IntColumnData)) return false;
-		IntColumnData thisClassObj = (IntColumnData) object;
+		if (!(object instanceof BigDecimalColumnData)) return false;
+		BigDecimalColumnData thisClassObj = (BigDecimalColumnData) object;
 		if (thisClassObj.hashCode() == this.hashCode()) return true;
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.parameter * 17;
+		return (int) (this.parameter.hashCode() * 17L);
 	}
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(this.parameter);
-		return sb.toString();
+		if (this.parameter != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(this.parameter);
+			return sb.toString();
+		} else {
+			return "NULL";
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package jp.co.dk.datastoremanager.core.rdb.history;
 
+import jp.co.dk.datastoremanager.core.rdb.TimestampColumnData.DateFormat;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -17,7 +19,7 @@ public class HistoryTableDeleteRecord extends HistoryTableRecord {
 			@Override
 			public void addLeftSideTd(Document document, Element trElement) {
 				Element opeTimeTd = document.createElement("td");
-				opeTimeTd.setTextContent(DateFormat.YYYYMMDD_HH24MISS.parse(historyTableDeleteRecord.getOperationTime()));
+				opeTimeTd.setTextContent(historyTableDeleteRecord.getOperationTime().toString(DateFormat.YYYYMMDD_HH24MISS));
 				opeTimeTd.setAttribute("rowspan", "2");
 				trElement.appendChild(opeTimeTd);
 				Element kindTd = document.createElement("td");

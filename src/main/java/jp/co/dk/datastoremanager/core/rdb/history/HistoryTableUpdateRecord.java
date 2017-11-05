@@ -1,5 +1,7 @@
 package jp.co.dk.datastoremanager.core.rdb.history;
 
+import jp.co.dk.datastoremanager.core.rdb.TimestampColumnData.DateFormat;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -21,7 +23,7 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 			public void addLeftSideTd(Document document, Element trElement) {
 				Element opeTimeTd = document.createElement("td");
 				opeTimeTd.setAttribute("rowspan", "2");
-				opeTimeTd.setTextContent(DateFormat.YYYYMMDD_HH24MISS.parse(historyTableUpdateFromRecord.getOperationTime()));
+				opeTimeTd.setTextContent(historyTableUpdateFromRecord.getOperationTime().toString(DateFormat.YYYYMMDD_HH24MISS));
 				trElement.appendChild(opeTimeTd);
 				
 				Element kindTd = document.createElement("td");
@@ -39,11 +41,6 @@ public class HistoryTableUpdateRecord extends HistoryTableRecord {
 		return this.historyTableUpdateToRecord.createTrRecord(document, new AddHistoryTrRecord() {
 			@Override
 			public void addLeftSideTd(Document document, Element trElement) {
-				// Element opeTimeTd = document.createElement("td");
-				// opeTimeTd.setAttribute("rowspan", "2");
-				// opeTimeTd.setTextContent(historyTableUpdateToRecord.getOperationTime().toString());
-				// trElement.appendChild(opeTimeTd);
-				
 				Element kindTd = document.createElement("td");
 				kindTd.setTextContent(historyTableUpdateToRecord.getOperationType().getName());
 				trElement.appendChild(kindTd);

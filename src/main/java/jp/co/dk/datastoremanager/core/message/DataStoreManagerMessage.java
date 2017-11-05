@@ -130,6 +130,12 @@ public class DataStoreManagerMessage extends AbstractMessage{
 	/** 現在時刻の取得に失敗しました。 */
 	public static final DataStoreManagerMessage FAILE_TO_GET_SYSDATE = new DataStoreManagerMessage("E040");
 	
+	/** アルゴリズムが設定されていません。 */
+	public static final DataStoreManagerMessage ALGORITHM_IS_NOT_SET = new DataStoreManagerMessage("E041");
+	
+	/** 不正なアルゴリズムが設定されました。 */
+	public static final DataStoreManagerMessage FAILE_TO_CONVERT_BY_ALGORITHM = new DataStoreManagerMessage("E041");
+	
 	protected DataStoreManagerMessage(String messageId) {
 		super(messageId);
 	}

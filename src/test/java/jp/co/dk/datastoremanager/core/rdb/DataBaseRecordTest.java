@@ -75,7 +75,7 @@ public class DataBaseRecordTest extends DataStoreManagerTestFoundation{
     			resultset.getInt("AGE"); result = new Integer(20);
             }};
             DataBaseRecord target = new DummyDataBaseRecord(resultset);
-			assertEquals(target.getInt("AGE"), 20);
+			assertEquals(target.getInt("AGE").get(), 20);
 		} catch (DataStoreManagerException e) {
 			fail(e);
 		}

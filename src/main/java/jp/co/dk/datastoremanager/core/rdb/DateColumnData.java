@@ -10,6 +10,7 @@ import java.util.Date;
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.DateColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
+import jp.co.dk.datastoremanager.core.rdb.BytesColumnData.Algorithm;
 
 public class DateColumnData implements ColumnData, SqlParameter{
 	
@@ -19,6 +20,10 @@ public class DateColumnData implements ColumnData, SqlParameter{
 		this.parameter = parameter;
 	}
 
+	public Date get() {
+		return this.parameter;
+	}
+	
 	@Override
 	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
@@ -31,7 +36,12 @@ public class DateColumnData implements ColumnData, SqlParameter{
 			throw new DataStoreManagerException(AN_EXCEPTION_OCCURRED_WHEN_PERFORMING_THE_SET_PARAMETERS_TO_SQL, e);
 		}
 	}
-	
+
+	@Override
+	public String getDataByString() {
+		return this.toString();
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
@@ -52,13 +62,27 @@ public class DateColumnData implements ColumnData, SqlParameter{
 	
 	@Override
 	public String toString() {
+		return this.toString(DateFormat.YYYYMMDD_HH24MISS);
+	}
+	
+	public String toString(DateFormat format) {
 		if (this.parameter != null) {
-			StringBuilder sb = new StringBuilder();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			sb.append(sdf.format(this.parameter).toString()).append("(date)");
-			return sb.toString();
+			return format.parse(this.parameter);
 		} else {
-			return "null(date)";
+			return "NULL";
+		}
+	}
+	
+	public enum DateFormat {
+		YYYYMMDD(new SimpleDateFormat("yyyy/MM/dd")),
+		YYYYMMDD_HH24MISS(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")),
+		;
+		protected SimpleDateFormat format;
+		private DateFormat(SimpleDateFormat format) {
+			this.format = format;
+		}
+		String parse(Date date) {
+			return this.format.format(date);
 		}
 	}
 }

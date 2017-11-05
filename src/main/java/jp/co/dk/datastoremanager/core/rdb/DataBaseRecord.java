@@ -118,9 +118,9 @@ public abstract class DataBaseRecord implements Record {
 	 * @return 数値
 	 * @throws DataStoreManagerException 値の取得に失敗した場合
 	 */
-	public BigDecimal getBigDecimal(String column) throws DataStoreManagerException {
+	public BigDecimalColumnData getBigDecimal(String column) throws DataStoreManagerException {
 		try {
-			return this.resultSet.getBigDecimal(column);
+			return new BigDecimalColumnData( this.resultSet.getBigDecimal(column) );
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(GET_COLUMN_IS_FAILE_BY_NAME, column);
 		}

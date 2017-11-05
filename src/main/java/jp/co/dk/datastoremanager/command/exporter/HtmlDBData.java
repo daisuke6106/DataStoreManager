@@ -164,7 +164,7 @@ public class HtmlDBData {
 				Element dataTr = document.createElement("tr");
 				for (ColumnMetaData columnMetaData : dataBaseRecord.getColumns()) {
 					Element dataTd = document.createElement("td");
-					dataTd.appendText(dataBaseRecord.getString(columnMetaData.getColumnname()));
+					dataTd.appendText(dataBaseRecord.getString(columnMetaData.getColumnname()).toString());
 					dataTr.appendChild(dataTd);
 					dataTable.appendChild(dataTr);
 				}

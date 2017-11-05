@@ -111,7 +111,7 @@ public abstract class ColumnMetaData {
 		return columnType;
 	}
 
-	public abstract Object getData(DataBaseRecord record) throws DataStoreManagerException ;
+	public abstract ColumnData getData(DataBaseRecord record) throws DataStoreManagerException ;
 	
 //	public Object getData(DataBaseRecord record) throws DataStoreManagerException {
 //		switch (columnIntType) {

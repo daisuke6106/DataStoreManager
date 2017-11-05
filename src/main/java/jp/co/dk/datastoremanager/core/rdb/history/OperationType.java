@@ -5,7 +5,7 @@ public enum OperationType {
 	IN("INSERT"), 
 	U1("UPDATE(BEFORE)"), 
 	U2("UPDATE(AFTER)"), 
-	DL(("DELETE"));
+	DL("DELETE");
 	
 	private String name;
 	

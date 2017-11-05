@@ -14,15 +14,3 @@ public abstract class HistoryTableRecord {
 	
 }
 
-enum DateFormat {
-	YYYYMMDD(new SimpleDateFormat("yyyy/MM/dd")),
-	YYYYMMDD_HH24MISS(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss SSS")),
-	;
-	protected SimpleDateFormat format;
-	private DateFormat(SimpleDateFormat format) {
-		this.format = format;
-	}
-	String parse(Date date) {
-		return this.format.format(date);
-	}
-}

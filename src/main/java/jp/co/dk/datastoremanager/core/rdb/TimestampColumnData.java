@@ -5,6 +5,8 @@ import static jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
@@ -36,6 +38,11 @@ public class TimestampColumnData implements ColumnData, SqlParameter{
 	}
 	
 	@Override
+	public String getDataByString() {
+		return this.toString();
+	}
+	
+	@Override
 	public boolean equals(Object object) {
 		if (object == null) return false;
 		if (!(object instanceof TimestampColumnData)) return false;
@@ -52,16 +59,30 @@ public class TimestampColumnData implements ColumnData, SqlParameter{
 			return -1;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
+		return this.toString(DateFormat.YYYYMMDD_HH24MISS);
+	}
+	
+	public String toString(DateFormat format) {
 		if (this.parameter != null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(this.parameter).append("(timestamp)");
-			return sb.toString();
+			return format.parse(this.parameter);
 		} else {
-			return "null(timestamp)";
+			return "NULL";
 		}
-		
+	}
+	
+	public enum DateFormat {
+		YYYYMMDD(new SimpleDateFormat("yyyy/MM/dd")),
+		YYYYMMDD_HH24MISS(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")),
+		;
+		protected SimpleDateFormat format;
+		private DateFormat(SimpleDateFormat format) {
+			this.format = format;
+		}
+		String parse(Date date) {
+			return this.format.format(date);
+		}
 	}
 }

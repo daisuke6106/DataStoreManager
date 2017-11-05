@@ -17,6 +17,10 @@ public class StringColumnData implements ColumnData, SqlParameter{
 		this.parameter = parameter;
 	} 
 
+	public String get() {
+		return this.parameter;
+	}
+	
 	@Override
 	public void set(int index, PreparedStatement statement) throws DataStoreManagerException {
 		try {
@@ -28,6 +32,11 @@ public class StringColumnData implements ColumnData, SqlParameter{
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(AN_EXCEPTION_OCCURRED_WHEN_PERFORMING_THE_SET_PARAMETERS_TO_SQL, e);
 		}
+	}
+	
+	@Override
+	public String getDataByString() {
+		return this.toString();
 	}
 	
 	@Override
@@ -52,10 +61,10 @@ public class StringColumnData implements ColumnData, SqlParameter{
 	public String toString() {
 		if (this.parameter != null) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(this.parameter).append("(string)");
+			sb.append(this.parameter);
 			return sb.toString();
 		} else {
-			return "null(string)";
+			return "NULL";
 		}
 	}
 }

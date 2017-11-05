@@ -9,9 +9,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.core.rdb.ColumnData;
 import jp.co.dk.datastoremanager.core.rdb.ColumnMetaData;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseRecord;
 import jp.co.dk.datastoremanager.core.rdb.DataConvertable;
+import jp.co.dk.datastoremanager.core.rdb.TimestampColumnData;
 
 public class HistoryTableTmpRecord implements DataConvertable {
 	
@@ -19,13 +21,13 @@ public class HistoryTableTmpRecord implements DataConvertable {
 	
 	protected List<ColumnMetaData> columnList;
 	
-	protected Date operationTime;
+	protected TimestampColumnData operationTime;
 	
 	protected OperationType operationType;
 	
-	protected List<Object> columnData = new ArrayList<>();
+	protected List<ColumnData> columnData = new ArrayList<>();
 	
-	HistoryTableTmpRecord(HistoryTableMetaData historyTableMetaData, List<ColumnMetaData> columnList, Date operationTime, OperationType operationType, List<Object> columnData) throws DataStoreManagerException {
+	HistoryTableTmpRecord(HistoryTableMetaData historyTableMetaData, List<ColumnMetaData> columnList, TimestampColumnData operationTime, OperationType operationType, List<ColumnData> columnData) throws DataStoreManagerException {
 		this.historyTableMetaData = historyTableMetaData;
 		this.columnList           = columnList;
 		this.operationTime        = operationTime;
@@ -33,7 +35,7 @@ public class HistoryTableTmpRecord implements DataConvertable {
 		this.columnData           = columnData;
 	}
 	
-	public Date getOperationTime() {
+	public TimestampColumnData getOperationTime() {
 		return this.operationTime;
 	}
 	
@@ -48,8 +50,8 @@ public class HistoryTableTmpRecord implements DataConvertable {
 	
 	public DataConvertable convert(DataBaseRecord dataBaseRecord) throws DataStoreManagerException {
 		TimestampColumnData operationTime = dataBaseRecord.getTimestamp("OPTM");
-		OperationType operationType = OperationType.valueOf( dataBaseRecord.getString("OPTP") );
-		List<Object> columnData = new ArrayList<>();
+		OperationType operationType = OperationType.valueOf( dataBaseRecord.getString("OPTP").get() );
+		List<ColumnData> columnData = new ArrayList<>();
 		for (ColumnMetaData column : columnList) columnData.add(column.getData(dataBaseRecord));
 		return new HistoryTableTmpRecord(this.historyTableMetaData, this.columnList, operationTime, operationType, columnData);
 	}
@@ -57,12 +59,12 @@ public class HistoryTableTmpRecord implements DataConvertable {
 	Element createTrRecord(Document document, AddHistoryTrRecord addHistoryTrRecord) {
 		Element tr = document.createElement("tr");
 		if (addHistoryTrRecord != null) addHistoryTrRecord.addLeftSideTd(document, tr);
-		for (Object column : columnData) {
+		for (ColumnData column : columnData) {
 			Element td = document.createElement("td");
 			if (column == null) {
 				td.setTextContent("(NULL)");
 			} else {
-				td.setTextContent(column.toString());
+				td.setTextContent(column.getDataByString());
 			}
 			tr.appendChild(td);
 		}

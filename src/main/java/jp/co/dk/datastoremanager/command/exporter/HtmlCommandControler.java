@@ -51,6 +51,7 @@ public class HtmlCommandControler extends AbtractCommandControler {
 		controler.execute(args);
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	protected void getAnyOptions(Options options) {
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true).withArgName("file"     ).withDescription("実行対象のSQLが記載されたファイル")	.withLongOpt("sql_file" ).create("f"));

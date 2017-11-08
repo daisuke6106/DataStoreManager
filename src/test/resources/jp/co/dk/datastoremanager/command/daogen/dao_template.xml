@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+	<file>
+		<content>
+public class ${TABLE_NAME} {
+
+	${column.class_variable}
+
+	${column.variable_accesser}
+}
+		</content>
+		
+		<column name="class_variable">
+	private ${COLUMN_TYPE} ${COLUMN_NAME};
+
+		</column>
+		
+		<column name="variable_accesser">
+	/**
+	 * ${COLUMN_COMMENT}を返却する。
+	 * @return ${COLUMN_NAME}
+	 */
+	public void set${COLUMN_NAME}(${COLUMN_TYPE} ${COLUMN_NAME}) {
+		this.${COLUMN_NAME} = ${COLUMN_NAME};
+	}
+
+	/**
+	 * ${COLUMN_COMMENT}を返却する。
+	 * @return ${COLUMN_NAME}
+	 */
+	public ${COLUMN_TYPE} get${COLUMN_NAME}() {
+		return this.${COLUMN_NAME};
+	}
+
+		</column>
+	</file>
+</table>

@@ -103,12 +103,12 @@ public abstract class AbtractCommandControler {
 	 * 
 	 * @param args 起動引数
 	 */
+	@SuppressWarnings("static-access")
 	protected void getRequiredOptions(Options options) {
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベース")	.withLongOpt("database").create("db"));
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースURL").withLongOpt("url").create("url"));
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースユーザ").withLongOpt("user").create("user"));
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true ).withDescription("接続先データベースパスワード").withLongOpt("password").create("pass"));
-		
 	}
 	
 	

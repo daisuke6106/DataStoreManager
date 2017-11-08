@@ -70,6 +70,7 @@ public class CreateHistoryTableControler extends AbtractCommandControler {
 		return "histtab";
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	protected void getAnyOptions(Options options) {
 		options.addOption(OptionBuilder.isRequired(false).hasArg(false).withDescription("ヒストリーテーブルの状態を確認する")	.withLongOpt("info" ).create("i"));

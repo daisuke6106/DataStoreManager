@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.16.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Document"/>
+	<classpathentry kind="lib" path="lib/document_0.1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -94,6 +94,7 @@ public class ExportHistoryTableControler extends AbtractCommandControler {
 		return "exp_htab";
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	protected void getAnyOptions(Options options) {
 		options.addOption(OptionBuilder.isRequired(true ).hasArg(true).withDescription("出力先（ファイル名含む）").withLongOpt("output_file").create("o"));

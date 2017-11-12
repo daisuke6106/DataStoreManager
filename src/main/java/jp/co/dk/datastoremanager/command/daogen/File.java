@@ -15,13 +15,15 @@ public class File {
 		this.fileElement = fileElement;
 	}
 	
-	String getContent(TableMetaData tableMetaData) throws DataStoreManagerException {
+	String getContent(TableMetaData tableMetaData, ColumnSetting columnSetting) throws DataStoreManagerException {
 		String content = this.fileElement.getChildElement(new ElementName(){
 			@Override
 			public String getName() {
 				return "content";
 			}
 		}).get(0).getContent();
+		
+		content = content.replaceAll("\\$\\{TABLE_NAME\\}", tableMetaData.toString());
 		
 		List<ColumnMetaData> columnMetaDataList = tableMetaData.getColumns();
 		
@@ -31,14 +33,14 @@ public class File {
 				return "column";
 			}
 		})) {
-			String columnContent = this.getColumnContent(columnElement, columnMetaDataList);
+			String columnContent = this.getColumnContent(columnElement, columnSetting, columnMetaDataList);
 			content = content.replaceAll("\\$\\{" + "column." + columnElement.getAttribute("name") + "\\}", columnContent);
 		}
 		
 		return content;
 	}
 	
-	private String getColumnContent(jp.co.dk.document.Element columnElement, List<ColumnMetaData> columnMetaDataList) {
+	private String getColumnContent(jp.co.dk.document.Element columnElement, ColumnSetting columnSetting, List<ColumnMetaData> columnMetaDataList) throws DataStoreManagerException {
 		StringBuilder columnListStr = new StringBuilder();
 		
 		for (ColumnMetaData columnMetaData : columnMetaDataList) {
@@ -46,6 +48,7 @@ public class File {
 			for (ColumnVariable columnVariable : ColumnVariable.values()) {
 				content = columnVariable.convertContent(content, columnMetaData);
 			}
+			content = columnSetting.convertContent(content, columnMetaData.getColumnType());
 			columnListStr.append(content);
 		}
 		return columnListStr.toString();

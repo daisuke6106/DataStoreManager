@@ -26,9 +26,10 @@ public class CreateDataAccessObjectControler extends AbtractCommandControler {
 				System.out.println("table is not found.");
 				System.exit(1);
 			}
-			TemplateFile templateFile = new TemplateFile(new FileInputStream(new java.io.File(this.cmd.getOptionValue("template"))));
+			TemplateFile  templateFile  = new TemplateFile(new FileInputStream(new java.io.File(this.cmd.getOptionValue("template"))));
+			ColumnSetting columnSetting = templateFile.getColumnSetting();
 			for (File file : templateFile.getFileElement()) {
-				System.out.println(file.getContent(tableMetaData));
+				System.out.println(file.getContent(tableMetaData, columnSetting));
 			}
 			
 		} catch (DataStoreManagerException | FileNotFoundException | DocumentException e) {

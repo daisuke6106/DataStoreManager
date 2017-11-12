@@ -134,7 +134,10 @@ public class DataStoreManagerMessage extends AbstractMessage{
 	public static final DataStoreManagerMessage ALGORITHM_IS_NOT_SET = new DataStoreManagerMessage("E041");
 	
 	/** 不正なアルゴリズムが設定されました。 */
-	public static final DataStoreManagerMessage FAILE_TO_CONVERT_BY_ALGORITHM = new DataStoreManagerMessage("E041");
+	public static final DataStoreManagerMessage FAILE_TO_CONVERT_BY_ALGORITHM = new DataStoreManagerMessage("E042");
+	
+	/** テンプレートにカラムが設定されていません。COLUMN_TYPE=[{0}] */
+	public static final DataStoreManagerMessage COLUMN_IS_NOT_SET_IN_TEMPLATE = new DataStoreManagerMessage("E043");
 	
 	protected DataStoreManagerMessage(String messageId) {
 		super(messageId);

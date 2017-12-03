@@ -10,7 +10,6 @@ import java.util.Date;
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.DateColumnData;
 import jp.co.dk.datastoremanager.core.rdb.SqlParameter;
-import jp.co.dk.datastoremanager.core.rdb.BytesColumnData.Algorithm;
 
 public class DateColumnData implements ColumnData, SqlParameter{
 	

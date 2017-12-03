@@ -20,8 +20,11 @@ public abstract class TableMetaData {
 	protected String schemaName;
 	
 	protected String tableName;
+
+	/** プライマリーキー情報一覧のキャッシュ */
+	protected List<PrimaryKeyMetaData> primaryKeyMetaDataList;
 	
-	protected TableMetaData(DataBaseDataStore dataBaseDataStore, String schemaName, String tableName) {
+	protected TableMetaData(DataBaseDataStore dataBaseDataStore, String schemaName, String tableName) throws DataStoreManagerException {
 		this.dataBaseDataStore = dataBaseDataStore;
 		this.schemaName = schemaName;
 		this.tableName = tableName;
@@ -31,19 +34,33 @@ public abstract class TableMetaData {
 		try {
 			List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
 			DatabaseMetaData dbmd = this.dataBaseDataStore.transaction.connection.getMetaData();
-			ResultSet rs = dbmd.getColumns(null, this.schemaName, this.tableName, "%");
-			
-//			ResultSetMetaData metaData= rs.getMetaData();
-//			for (int i = 1; i <= metaData.getColumnCount(); i++) System.out.println(metaData.getColumnName(i));
-			
-			for (int i=0; rs.next(); i++) columnMetaDataList.add(this.createColumnMetaData(rs, i));
+			ResultSet columnsResultSet    = dbmd.getColumns(null, this.schemaName, this.tableName, "%");
+			for (int i=0; columnsResultSet.next(); i++) columnMetaDataList.add(this.createColumnMetaData(this, columnsResultSet, i));
 			return columnMetaDataList;
 		} catch (SQLException e) {
 			throw new DataStoreManagerException(FAILED_TO_ACQUIRE_COLUMN_INFO, e);
 		}
 	}
 	
-	protected abstract ColumnMetaData createColumnMetaData(ResultSet rs, int i) throws SQLException;
+	/**
+	 * <p>このテーブルが持つ全プライマリーキー情報を取得する。</p>
+	 * 一度取得したらキャッシュ化され、以降はキャッシュ化された情報を返却する。
+	 * 
+	 * @return プライマリーキー情報一覧
+	 * @throws DataStoreManagerException プライマリーキー情報の取得に失敗した場合
+	 */
+	public List<PrimaryKeyMetaData> getPrimaryKey() throws DataStoreManagerException {
+		if (this.primaryKeyMetaDataList == null) {
+			List<PrimaryKeyMetaData> primaryKeyMetaDataList = new ArrayList<>();
+			for (PrimaryKeyMetaData primaryKeyMetaData : this.dataBaseDataStore.getPrimaryKey()) {
+				if (primaryKeyMetaData.tableName.equals(this.tableName)) primaryKeyMetaDataList.add(primaryKeyMetaData);
+			}
+			this.primaryKeyMetaDataList = primaryKeyMetaDataList;
+		}
+		return new ArrayList<>(this.primaryKeyMetaDataList);
+	}
+	
+	protected abstract ColumnMetaData createColumnMetaData(TableMetaData tableMetaData, ResultSet rs, int i) throws SQLException;
 	
 	public String getHistoryTableName() {
 		return HISTRY_TABLE_NAME_HEADER + this.tableName;

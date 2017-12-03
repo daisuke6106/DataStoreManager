@@ -1,6 +1,8 @@
 package jp.co.dk.datastoremanager.core.rdb;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +20,8 @@ import jp.co.dk.datastoremanager.core.rdb.Sql;
 import jp.co.dk.datastoremanager.core.rdb.Transaction;
 import jp.co.dk.logger.Logger;
 import jp.co.dk.logger.LoggerFactory;
+
+import static jp.co.dk.datastoremanager.core.message.DataStoreExporterMessage.FAILED_TO_ACQUIRE_COLUMN_INFO;
 import static jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage.*;
 
 /**
@@ -43,6 +47,9 @@ public abstract class DataBaseDataStore implements DataStore {
 	
 	/** ロガーインスタンス */
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	/** プライマリーキー情報一覧のキャッシュ */
+	protected List<PrimaryKeyMetaData> primaryKeyMetaDataList;
 	
 	/**
 	 * コンストラクタ<p/>
@@ -263,6 +270,37 @@ public abstract class DataBaseDataStore implements DataStore {
 	}
 	
 	/**
+	 * <p>このデータベースが持つ全プライマリーキー情報を取得する。</p>
+	 * 一度取得したらキャッシュ化され、以降はキャッシュ化された情報を返却する。
+	 * 
+	 * @return プライマリーキー情報一覧
+	 * @throws DataStoreManagerException プライマリーキー情報の取得に失敗した場合
+	 */
+	public List<PrimaryKeyMetaData> getPrimaryKey() throws DataStoreManagerException {
+		if (this.primaryKeyMetaDataList == null) {
+			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_START);
+			List<PrimaryKeyMetaData> primaryKeyMetaDataList = new ArrayList<>();
+			String schema = this.dataBaseAccessParameter.getUser().toUpperCase();
+			try {
+				DatabaseMetaData dbmd = this.transaction.connection.getMetaData();
+				ResultSet primaryKeyResultSet = dbmd.getPrimaryKeys(null, schema, "%");
+				while (primaryKeyResultSet.next()) {
+					primaryKeyMetaDataList.add( new PrimaryKeyMetaData(
+						primaryKeyResultSet.getString("TABLE_NAME"),
+						primaryKeyResultSet.getString("PK_NAME"),
+						primaryKeyResultSet.getShort ("KEY_SEQ"),
+						primaryKeyResultSet.getString("COLUMN_NAME")
+					));
+				}
+			} catch (SQLException e) {
+				throw new DataStoreManagerException(FAILED_TO_ACQUIRE_COLUMN_INFO, e);
+			}
+			this.primaryKeyMetaDataList = primaryKeyMetaDataList;
+		}
+		return new ArrayList<>(this.primaryKeyMetaDataList);
+	}
+	
+	/**
 	 * <p>DBから現在日時を取得する。</p>
 	 * DBサーバに設定された現在日時を取得する。<br/>
 	 * ORACLEで有ればSYSDATEの値を取得する。<br/>
@@ -271,7 +309,7 @@ public abstract class DataBaseDataStore implements DataStore {
 	 */
 	public abstract Date getDataBaseTime() throws DataStoreManagerException;
 	
-	protected abstract TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) ;
+	protected abstract TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) throws DataStoreManagerException;
 	
 	protected abstract DataBaseRecord createDataBaseRecord(ResultSet resultSet);
 	

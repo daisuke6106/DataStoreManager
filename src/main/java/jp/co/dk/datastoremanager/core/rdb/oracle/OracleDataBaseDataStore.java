@@ -33,7 +33,7 @@ public class OracleDataBaseDataStore extends DataBaseDataStore {
 	}
 
 	@Override
-	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) {
+	protected TableMetaData createTableMetaData(DataBaseDataStore dataBaseDataStore, String schma, String tableName) throws DataStoreManagerException {
 		return new OracleTableMetaData(dataBaseDataStore, schma, tableName);
 	}
 
@@ -78,7 +78,7 @@ class OracleDataBaseRecord extends DataBaseRecord {
 
 class OracleTableMetaData extends TableMetaData {
 
-	OracleTableMetaData(DataBaseDataStore dataBaseDataStore, String schemaName, String tableName) {
+	OracleTableMetaData(DataBaseDataStore dataBaseDataStore, String schemaName, String tableName) throws DataStoreManagerException {
 		super(dataBaseDataStore, schemaName, tableName);
 	}
 
@@ -185,8 +185,8 @@ class OracleTableMetaData extends TableMetaData {
 	}
 
 	@Override
-	protected ColumnMetaData createColumnMetaData(ResultSet rs, int i) throws SQLException {
-		return new OracleColumnMetaData(rs, i);
+	protected ColumnMetaData createColumnMetaData(TableMetaData tableMetaData, ResultSet rs, int i) throws SQLException {
+		return new OracleColumnMetaData(tableMetaData, rs, i);
 	}
 }
 
@@ -215,8 +215,8 @@ class OracleColumnMetaData extends ColumnMetaData {
 		super(metaData, index);
 	}
 
-	protected OracleColumnMetaData(ResultSet resultSet, int index) throws SQLException {
-		super(resultSet, index);
+	protected OracleColumnMetaData(TableMetaData tableMetaData, ResultSet resultSet, int index) throws SQLException {
+		super(tableMetaData, resultSet, index);
 	}
 	
 	@Override

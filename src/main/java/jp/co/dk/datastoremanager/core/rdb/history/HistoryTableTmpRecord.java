@@ -1,8 +1,6 @@
 package jp.co.dk.datastoremanager.core.rdb.history;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Document;

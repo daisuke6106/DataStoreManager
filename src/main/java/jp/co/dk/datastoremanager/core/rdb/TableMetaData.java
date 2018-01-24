@@ -52,7 +52,7 @@ public abstract class TableMetaData {
 	public List<PrimaryKeyMetaData> getPrimaryKey() throws DataStoreManagerException {
 		if (this.primaryKeyMetaDataList == null) {
 			List<PrimaryKeyMetaData> primaryKeyMetaDataList = new ArrayList<>();
-			for (PrimaryKeyMetaData primaryKeyMetaData : this.dataBaseDataStore.getPrimaryKey()) {
+			for (PrimaryKeyMetaData primaryKeyMetaData : this.dataBaseDataStore.getPrimaryKey(this.tableName)) {
 				if (primaryKeyMetaData.tableName.equals(this.tableName)) primaryKeyMetaDataList.add(primaryKeyMetaData);
 			}
 			this.primaryKeyMetaDataList = primaryKeyMetaDataList;

@@ -273,17 +273,18 @@ public abstract class DataBaseDataStore implements DataStore {
 	 * <p>このデータベースが持つ全プライマリーキー情報を取得する。</p>
 	 * 一度取得したらキャッシュ化され、以降はキャッシュ化された情報を返却する。
 	 * 
+	 * @param tableName 取得対象のテーブル名
 	 * @return プライマリーキー情報一覧
 	 * @throws DataStoreManagerException プライマリーキー情報の取得に失敗した場合
 	 */
-	public List<PrimaryKeyMetaData> getPrimaryKey() throws DataStoreManagerException {
+	public List<PrimaryKeyMetaData> getPrimaryKey(String tableName) throws DataStoreManagerException {
 		if (this.primaryKeyMetaDataList == null) {
 			if (this.transaction == null) throw new DataStoreManagerException(TRANSACTION_IS_NOT_START);
 			List<PrimaryKeyMetaData> primaryKeyMetaDataList = new ArrayList<>();
 			String schema = this.dataBaseAccessParameter.getUser().toUpperCase();
 			try {
 				DatabaseMetaData dbmd = this.transaction.connection.getMetaData();
-				ResultSet primaryKeyResultSet = dbmd.getPrimaryKeys(null, schema, "%");
+				ResultSet primaryKeyResultSet = dbmd.getPrimaryKeys(null, schema, tableName);
 				while (primaryKeyResultSet.next()) {
 					primaryKeyMetaDataList.add( new PrimaryKeyMetaData(
 						primaryKeyResultSet.getString("TABLE_NAME"),

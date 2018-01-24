@@ -108,8 +108,49 @@ class JavaDaoClass(JavaClassFile):
 
 	def contents(self):
 		
-		daoClassName    = self.table.toString() + "Dao"
-		recordClassName = self.table.toString() + "Record"
+		tableName       = self.table.toString()
+		daoClassName    = tableName + "Dao"
+		recordClassName = tableName + "Record"
+		
+		# all columns
+		all_columns = ""
+		for column in self.table.getColumns():
+				all_columns = all_columns + column.getColumnname() + ","
+		all_columns = all_columns[:-1]
+
+		# all all_columns_question
+		all_columns_question = ""
+		for column in self.table.getColumns():
+				all_columns_question = all_columns_question + "?,"
+		all_columns_question = all_columns_question[:-1]
+
+		# all_columns_columns_java_args
+		all_columns_columns_java_args = ""
+		for column in self.table.getColumns():
+				all_columns_columns_java_args = all_columns_columns_java_args + self.convertOracleColumnToJavaObject(column) + " " + column.getColumnname() + ","
+		all_columns_columns_java_args = all_columns_columns_java_args[:-1]
+
+		# primarykey columns
+		primarykey_columns = ""
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				primarykey_columns = primarykey_columns + column.getColumnname() + ","
+		primarykey_columns = primarykey_columns[:-1]
+		
+		# primarykey_columns_where_args
+		primarykey_columns_where_args = ""
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				primarykey_columns_where_args = primarykey_columns_where_args + column.getColumnname() + " = ? AND"
+		primarykey_columns_where_args = primarykey_columns_where_args[:-4]
+		
+		# primarykey_columns_java_args
+		primarykey_columns_java_args = ""
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				primarykey_columns_java_args = primarykey_columns_java_args + self.convertOracleColumnToJavaObject(column) + " " + column.getColumnname() + ","
+		primarykey_columns_java_args = primarykey_columns_java_args[:-1]
+		
 		
 		contentsstr = ""
 		contentsstr = contentsstr + "package " + self.package + ";\n"
@@ -123,16 +164,66 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "\n"
 		contentsstr = contentsstr + "public class " + daoClassName + " extends AbstractDataBaseAccessObject {" + "\n"
 		contentsstr = contentsstr + "\n"
+
+		# constractor
+		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {\n"
+		contentsstr = contentsstr + "\t\tsuper(dataBaseAccessParameter);\n"
+		contentsstr = contentsstr + "\t}\n"
+		contentsstr = contentsstr + "\n"
 		
+		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataStore dataStore) throws DataStoreManagerException {\n"
+		contentsstr = contentsstr + "\t\tsuper(dataStore);\n"
+		contentsstr = contentsstr + "\t}\n"
+		contentsstr = contentsstr + "\n"
+
 		# select
-		contentsstr = contentsstr + "\tpublic" + " " + recordClassName + " select("
+		contentsstr = contentsstr + "\tpublic" + " " + recordClassName + " select(" + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
+		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"SELECT " + all_columns + " FROM " + tableName + " WHERE " + primarykey_columns_where_args + "\");\n"
 		for column in self.table.getColumns():
 			if column.isPrimaryKey() :
-				contentsstr = contentsstr + self.convertOracleColumnToJavaObject(column) + " " + column.getColumnname()
-		contentsstr = contentsstr + ") throws DataStoreManagerException {" + "\n"
-		
-		
+				contentsstr = contentsstr + "\t\tsql.setParameter(" + column.getColumnname() + ");\n"
+		contentsstr = contentsstr + "\t\treturn selectSingle(sql, new " + recordClassName + "());\n"
+		contentsstr = contentsstr + "\t}" + "\n"
 		contentsstr = contentsstr + "\n"
+		
+		# insert
+		contentsstr = contentsstr + "\tpublic void insert(" + all_columns_columns_java_args + ") throws DataStoreManagerException {" + "\n"
+		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"INSERT INTO " + tableName + "(" + all_columns + ") VALUES (" + all_columns_question + ")\");\n"
+		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\t\tsql.setParameter(" + column.getColumnname() + ");\n"
+		contentsstr = contentsstr + "\t\tinsert(sql);\n"
+		contentsstr = contentsstr + "\t}" + "\n"
+		contentsstr = contentsstr + "\n"
+		
+		# update
+		contentsstr = contentsstr + "\tpublic int update(" + recordClassName + " updateRecord, " + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
+		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"UPDATE " + tableName + "\");\n" 
+		contentsstr = contentsstr + "\t\tjava.uril.StringJoiner setToken = new java.uril.StringJoiner(\",\");\n"
+		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\t\tif (updateRecord.isset_" + column.getColumnname() + ") {\n"
+			contentsstr = contentsstr + "\t\t\tsetToken.append(\"" + column.getColumnname() + " = ?\");\n"
+			contentsstr = contentsstr + "\t\t\tsql.setParameter(" + column.getColumnname() + ");\n"
+			contentsstr = contentsstr + "\t\t}\n"
+		contentsstr = contentsstr + "\t\tsql.add(\" SET \");\n"
+		contentsstr = contentsstr + "\t\tsql.add(setToken.toString());\n"
+		contentsstr = contentsstr + "\t\tsql.add(\" WHERE " + primarykey_columns_where_args + "\");\n"
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				contentsstr = contentsstr + "\t\tsql.setParameter(" + column.getColumnname() + ");\n"
+		contentsstr = contentsstr + "\t\treturn update(sql);\n"
+		contentsstr = contentsstr + "\t}" + "\n"
+		contentsstr = contentsstr + "\n"
+		
+		# delete
+		contentsstr = contentsstr + "\tpublic int delete(" + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
+		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"DELETE FROM " + tableName + " WHERE " + primarykey_columns_where_args + "\");\n"
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				contentsstr = contentsstr + "\t\tsql.setParameter(" + column.getColumnname() + ");\n"
+		contentsstr = contentsstr + "\t\treturn delete(sql);\n"
+		contentsstr = contentsstr + "\t}" + "\n"
+		contentsstr = contentsstr + "\n"
+
 		contentsstr = contentsstr + "}" + "\n"
 		return contentsstr
 
@@ -141,12 +232,6 @@ if __name__ == "__main__":
 	param = DataBaseAccessParameter(DataStoreKind.ORACLE, DataBaseDriverConstants.ORACLE, "jdbc:oracle:thin:@192.168.42.194:1521:XE", "usr01", "12345")
 	dataStore = OracleDataBaseDataStore(param)
 	dataStore.startTransaction()
-	
-
-	
-	
-	# classFile = JavaRecordClass("jp.co.dk.dbms", dataStore.getTables()[0])
-	# print( classFile.contents() )
 	
 	classFile = JavaDaoClass("jp.co.dk.dbms", dataStore.getTables()[0])
 	print( classFile.contents() )

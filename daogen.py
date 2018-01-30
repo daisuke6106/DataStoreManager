@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
+import os
+import shutil
 sys.path.append("datastoremanager_1.2.4_all.jar")
 
 import jp.co.dk.datastoremanager.core.rdb.oracle.OracleDataBaseDataStore as OracleDataBaseDataStore
@@ -14,16 +16,46 @@ class ClassFile:
 	def contents(self):
 		pass
 	
-	def write(self, filepath):
-		f = open(filepath, "w")
+	def write(self, dirpath):
+		filepath = dirpath + "/" + self.classname() + "." + self.extension()
+		if os.path.exists(filepath) :
+			os.remove(filepath)
+		f = open(dirpath + "/" + self.classname() + "." + self.extension(), "w")
 		f.write(self.contents())
 		f.close()
-
+	
+	def classname(self):
+		return ""
+	
+	def extension(self):
+		return ""
+	
 class JavaClassFile(ClassFile):
 	def __init__(self, package, table):
 		self.package = package
 		self.table   = table
 		
+	def write(self, dirpath):
+		
+		package_path = package.replace(".","/")
+		
+		if os.path.exists(package_path) and os.path.isfile(package_path) :
+			print("package_path is file, exists already. package_path=[" + package_path + "]" )
+			sys.exit(1) 
+		elif os.path.exists(package_path) and os.path.isdir(package_path) :
+			print("package_path is dir, exists already. package_path=[" + package_path + "]" )
+		else :
+			os.makedirs(package_path)
+		
+		os.chdir(package_path)
+		
+		filepath = dirpath + "/" + self.classname() + "." + self.extension()
+		if os.path.exists(filepath) :
+			os.remove(filepath)
+		f = open(dirpath + "/" + self.classname() + "." + self.extension(), "w")
+		f.write(self.contents())
+		f.close()
+	
 	def convertOracleColumnToJavaObject(self, column):
 		column_type = column.getColumnType()
 		if column_type in {"CHAR", "NCHAR", "VARCHAR2", "NVARCHAR2", "CLOB"}:
@@ -54,11 +86,18 @@ class JavaClassFile(ClassFile):
 		else:
 			raise Exception("unknown column_type=[" + column_type + "]")
 
-class JavaRecordClass(JavaClassFile):
+	def extension(self):
+		return "java"
+	
 
+class JavaRecordClass(JavaClassFile):
+	
+	def classname(self):
+		return self.table.toString() + "Record"
+	
 	def contents(self):
 		
-		recordClassName = self.table.toString() + "Record"
+		recordClassName = self.classname()
 		
 		contentsstr = ""
 		contentsstr = contentsstr + "package " + self.package + ";\n"
@@ -106,10 +145,13 @@ class JavaRecordClass(JavaClassFile):
 
 class JavaDaoClass(JavaClassFile):
 
+	def classname(self):
+		return self.table.toString() + "Dao"
+	
 	def contents(self):
 		
 		tableName       = self.table.toString()
-		daoClassName    = tableName + "Dao"
+		daoClassName    = self.classname()
 		recordClassName = tableName + "Record"
 		
 		# all columns
@@ -227,12 +269,28 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "}" + "\n"
 		return contentsstr
 
-
 if __name__ == "__main__":
-	param = DataBaseAccessParameter(DataStoreKind.ORACLE, DataBaseDriverConstants.ORACLE, "jdbc:oracle:thin:@192.168.42.194:1521:XE", "usr01", "12345")
+	
+	config      = sys.argv[1] # jdbc:oracle:thin:@192.168.1.151:1521:XE
+	user        = sys.argv[2] # usr01
+	password    = sys.argv[3] # 12345
+	output_path = sys.argv[4] # /tmp/dao_generate/
+	package     = sys.argv[5] # jp.co.dao_example
+	
+	if os.path.exists(output_path) and os.path.isfile(output_path) :
+		print("output_path is file, exists already. output_path=[" + output_path + "]" )
+		sys.exit(1) 
+	elif os.path.exists(output_path) and os.path.isdir(output_path) :
+		print("output_path is dir, exists already. output_path=[" + output_path + "]" )
+	else :
+		os.makedirs(output_path)
+	
+	os.chdir(output_path)
+
+	param = DataBaseAccessParameter(DataStoreKind.ORACLE, DataBaseDriverConstants.ORACLE, config, user, password)
 	dataStore = OracleDataBaseDataStore(param)
 	dataStore.startTransaction()
 	
-	classFile = JavaDaoClass("jp.co.dk.dbms", dataStore.getTables()[0])
-	print( classFile.contents() )
+	classFile = JavaDaoClass(package, dataStore.getTables()[0])
+	classFile.write(".")
 	sys.exit()

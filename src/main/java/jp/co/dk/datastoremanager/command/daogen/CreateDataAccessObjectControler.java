@@ -2,13 +2,21 @@ package jp.co.dk.datastoremanager.command.daogen;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
 
 import jp.co.dk.datastoremanager.command.AbtractCommandControler;
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage;
+import jp.co.dk.datastoremanager.core.rdb.ColumnMetaData;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter;
 import jp.co.dk.datastoremanager.core.rdb.DataBaseDataStore;
 import jp.co.dk.datastoremanager.core.rdb.TableMetaData;
+import jp.co.dk.document.ElementName;
 import jp.co.dk.document.exception.DocumentException;
+import jp.co.dk.document.xml.XmlDocument;
 
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -59,3 +67,199 @@ public class CreateDataAccessObjectControler extends AbtractCommandControler {
 		controler.execute(args);
 	}
 }
+
+class TemplateFile extends XmlDocument {
+	
+	TemplateFile(InputStream inputStream) throws DocumentException {
+		super(inputStream);
+	}
+	
+	List<File> getFileElement() {
+		List<File> fileList = new ArrayList<>();
+		for (jp.co.dk.document.Element fileElement : this.getChildElement(new ElementName() {
+			@Override
+			public String getName() {
+				return "file";
+			}
+		})){
+			fileList.add(new File(fileElement));
+		}
+		return fileList;
+	}
+	
+	ColumnSetting getColumnSetting() {
+		for (jp.co.dk.document.Element columnSettingElement : this.getChildElement(new ElementName() {
+			@Override
+			public String getName() {
+				return "column_setting";
+			}
+		})){
+			return new ColumnSetting(columnSettingElement);
+		}
+		return null;
+	}
+	
+	List<PrimaryKeyColumnList> getPrimaryKeyColumnList() {
+		List<PrimaryKeyColumnList> primaryKeyColumnList = new ArrayList<>();
+		for (jp.co.dk.document.Element primarykeyColumnSettingElement : this.getChildElement(new ElementName() {
+			@Override
+			public String getName() {
+				return "primarykey_column_list";
+			}
+		})){
+			primaryKeyColumnList.add(new PrimaryKeyColumnList(primarykeyColumnSettingElement));
+		}
+		return primaryKeyColumnList;
+	}
+}
+
+
+class File {
+	
+	protected jp.co.dk.document.Element fileElement;
+	
+	File(jp.co.dk.document.Element fileElement) {
+		this.fileElement = fileElement;
+	}
+	
+	String getContent(TableMetaData tableMetaData, ColumnSetting columnSetting) throws DataStoreManagerException {
+		String content = this.fileElement.getChildElement(new ElementName(){
+			@Override
+			public String getName() {
+				return "content";
+			}
+		}).get(0).getContent();
+		
+		content = content.replaceAll("\\$\\{TABLE_NAME\\}", tableMetaData.toString());
+		
+		List<ColumnMetaData> columnMetaDataList = tableMetaData.getColumns();
+		
+		for (jp.co.dk.document.Element columnElement : this.fileElement.getChildElement(new ElementName(){
+			@Override
+			public String getName() {
+				return "column";
+			}
+		})) {
+			String columnContent = this.getColumnContent(columnElement, columnSetting, columnMetaDataList);
+			content = content.replaceAll("\\$\\{" + "column." + columnElement.getAttribute("name") + "\\}", columnContent);
+		}
+		
+		return content;
+	}
+	
+	private String getColumnContent(jp.co.dk.document.Element columnElement, ColumnSetting columnSetting, List<ColumnMetaData> columnMetaDataList) throws DataStoreManagerException {
+		StringBuilder columnListStr = new StringBuilder();
+		
+		for (ColumnMetaData columnMetaData : columnMetaDataList) {
+			String content = columnElement.getContent();
+			for (ColumnVariable columnVariable : ColumnVariable.values()) {
+				content = columnVariable.convertContent(content, columnMetaData);
+			}
+			content = columnSetting.convertContent(content, columnMetaData.getColumnType());
+			columnListStr.append(content);
+		}
+		return columnListStr.toString();
+	}
+}
+
+class ColumnSetting {
+	
+	protected jp.co.dk.document.Element columnSettingElement;
+	
+	protected List<jp.co.dk.document.Element> columnList;
+	
+	ColumnSetting(jp.co.dk.document.Element columnSettingElement) {
+		this.columnSettingElement = columnSettingElement;
+		this.columnList           = this.columnSettingElement.getChildElement(new ElementName() {
+			@Override
+			public String getName() {
+				return "column";
+			}
+		});
+	}
+	
+	String convertContent(String beforeConvert, String type) throws DataStoreManagerException {
+		for (jp.co.dk.document.Element column : this.columnList) {
+			if (type.equals(column.getAttribute("type"))) {
+				return beforeConvert.replaceAll("\\$\\{" + "column_setting.class" + "\\}", column.getAttribute("class"));
+			}
+		}
+		throw new DataStoreManagerException(DataStoreManagerMessage.COLUMN_IS_NOT_SET_IN_TEMPLATE, type);
+	}
+}
+
+class PrimaryKeyColumnList {
+
+	protected jp.co.dk.document.Element primaryKeyColumnListElement;
+	
+	protected String separator;
+	
+	PrimaryKeyColumnList(jp.co.dk.document.Element primaryKeyColumnListElement) {
+		this.primaryKeyColumnListElement = primaryKeyColumnListElement;
+		String separator = this.primaryKeyColumnListElement.getAttribute("separator");
+		if (separator == null || separator.isEmpty()) {
+			this.separator = "";
+		} else {
+			this.separator = separator;
+		}
+	}
+	
+	String getPrimaryKeyColumnContent(ColumnSetting columnSetting, List<ColumnMetaData> columnMetaDataList) throws DataStoreManagerException {
+		StringJoiner primaryKeyListStr = new StringJoiner(this.separator);
+		String       content           = this.primaryKeyColumnListElement.getContent();
+		for (ColumnMetaData columnMetaData : columnMetaDataList) {
+			if (columnMetaData.isPrimaryKey()) {
+				for (ColumnVariable columnVariable : ColumnVariable.values()) {
+					content = columnVariable.convertContent(content, columnMetaData);
+				}
+				content = columnSetting.convertContent(content, columnMetaData.getColumnType());
+				primaryKeyListStr.add(content);
+			}
+		}
+		return primaryKeyListStr.toString();
+	}
+}
+
+enum ColumnVariable {
+	COLUMN_COMMENT("COLUMN_COMMENT", new Replacer(){
+		@Override
+		public String replace(ColumnMetaData columnMetaData) {
+			return columnMetaData.getColumnname();
+		}
+	}),
+	
+	COLUMN_NAME("COLUMN_NAME", new Replacer(){
+		@Override
+		public String replace(ColumnMetaData columnMetaData) {
+			return columnMetaData.getColumnname();
+		}
+	}),
+	
+	COLUMN_TYPE("COLUMN_TYPE", new Replacer(){
+		@Override
+		public String replace(ColumnMetaData columnMetaData) {
+			return columnMetaData.getColumnType();
+		}
+	})
+	;
+	
+	private String variable;
+	
+	private Replacer replacer;
+	
+	private ColumnVariable(String variable, Replacer replacer) {
+		this.variable = variable;
+		this.replacer = replacer;
+	}
+	
+	public String convertContent(String content, ColumnMetaData columnMetaData) {
+		return content.replaceAll("\\$\\{" + this.variable + "\\}", this.replacer.replace(columnMetaData));
+	}
+	
+	private interface Replacer { 
+		String replace(ColumnMetaData columnMetaData);
+	}
+}
+
+
+

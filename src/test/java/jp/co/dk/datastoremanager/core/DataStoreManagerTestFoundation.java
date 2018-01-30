@@ -19,7 +19,7 @@ public class DataStoreManagerTestFoundation extends TestCaseTemplate{
 	 * @throws DataStoreManagerException 引数が不足していた場合
 	 */
 	protected jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter getAccessableDataBaseAccessParameterORACLE() throws DataStoreManagerException {
-		return new jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter(DataStoreKind.ORACLE, DataBaseDriverConstants.ORACLE, "jdbc:oracle:thin:@sandbox.oracle.daisuke6106.mydns.jp:1521:XE", "usr01", "12345");
+		return new jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter(DataStoreKind.ORACLE, DataBaseDriverConstants.ORACLE, "jdbc:oracle:thin:@192.168.42.194:1521:XE", "usr01", "12345");
 	}
 	
 	/**

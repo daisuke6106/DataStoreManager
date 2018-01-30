@@ -445,8 +445,8 @@
 	<target name="all">
 		<antcall target="jar"/>
 		<antcall target="jar_all"/>
-		<antcall target="jar_aspectj"/>
-		<antcall target="jar_aspectj_all"/>
+		<!-- <antcall target="jar_aspectj"/> -->
+		<!-- <antcall target="jar_aspectj_all"/> -->
 		<antcall target="test_jar"/>
 		<antcall target="test_jar_all"/>
 		<antcall target="doc"/>

@@ -2,6 +2,7 @@ package jp.co.dk.datastoremanager.core.rdb.oracle;
 
 import jp.co.dk.datastoremanager.core.DataStoreManagerTestFoundation;
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
+import jp.co.dk.datastoremanager.core.rdb.PrimaryKeyMetaData;
 import jp.co.dk.datastoremanager.core.rdb.oracle.OracleDataBaseDataStore;
 import jp.co.dk.datastoremanager.core.rdb.oracle.OracleHistoryTableMetaData;
 import jp.co.dk.datastoremanager.core.rdb.oracle.OracleTableMetaData;
@@ -12,6 +13,8 @@ import org.junit.Test;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
+import java.util.List;
+
 
 public class OracleTableMetaDataTest extends DataStoreManagerTestFoundation{
 	
@@ -21,7 +24,7 @@ public class OracleTableMetaDataTest extends DataStoreManagerTestFoundation{
  	public void init() throws DataStoreManagerException {
 		OracleDataBaseDataStore dbs = new OracleDataBaseDataStore(this.getAccessableDataBaseAccessParameterORACLE());
 		dbs.startTransaction();
-		this.target = (OracleTableMetaData)dbs.getTable("EMP");
+		this.target = (OracleTableMetaData)dbs.getTable("ALL_TYPE_COLUMNS");
 		this.target.createHistoryTable();
 		this.target.createTriggerHistoryTable();
 	}
@@ -57,12 +60,18 @@ public class OracleTableMetaDataTest extends DataStoreManagerTestFoundation{
 		assertThat(this.target.getHistoryTable(), nullValue());
 		
 	}
-	
+
+	@Test
+	public void getPrimaryKey() throws DataStoreManagerException {
+		List<PrimaryKeyMetaData> primaryKeyList = this.target.getPrimaryKey();
+		assertThat(primaryKeyList.size(), is(1));
+	}
+
 	@After
  	public void dest() throws DataStoreManagerException {
 		OracleDataBaseDataStore dbs = new OracleDataBaseDataStore(this.getAccessableDataBaseAccessParameterORACLE());
 		dbs.startTransaction();
-		this.target = (OracleTableMetaData)dbs.getTable("EMP");
+		this.target = (OracleTableMetaData)dbs.getTable("ALL_TYPE_COLUMNS");
 		this.target.dropHistoryTrigger();
 		this.target.dropHistoryTable();
 	}

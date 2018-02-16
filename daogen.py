@@ -138,6 +138,18 @@ class JavaRecordClass(JavaClassFile):
 		contentsstr = contentsstr + "\t}\n"
 		contentsstr = contentsstr + "\n"
 		
+		# toString
+		contentsstr = contentsstr + "\t@Override" + "\n"
+		contentsstr = contentsstr + "\tpublic" + " String toString() {" + "\n"
+		contentsstr = contentsstr + "\t\tStringBilder str = new StringBuilder();" + "\n"
+		contentsstr = contentsstr + "\t\tstr.add(""" + recordClassName + "="");" + "\n"
+		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\t\t" + "if ( this.isset_" + column.getColumnname() + ") {" + "\n" 
+			contentsstr = contentsstr + "\t\t\t" + "str.add(""" + column.getColumnname() + "="").add(this." + column.getColumnname() + ");\n"
+			contentsstr = contentsstr + "\t}\n"
+		contentsstr = contentsstr + "\t}\n"
+		contentsstr = contentsstr + "\n"
+		
 		
 		contentsstr = contentsstr + "\n"
 		contentsstr = contentsstr + "}" + "\n"
@@ -204,20 +216,35 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter;\n"
 		contentsstr = contentsstr + "import jp.co.dk.datastoremanager.core.rdb.Sql;\n"
 		contentsstr = contentsstr + "\n"
+		contentsstr = contentsstr + "/**" + "\n"
+		contentsstr = contentsstr + "  This class is DataAccessObject to Oracle of [" + tableName + "] Table." + "\n"
+		contentsstr = contentsstr + "  This class is auto generate class." + "\n"
+		contentsstr = contentsstr + "  This class has SELECT method By Primary Key, INSERT method, UPDATE method by Primary Key, DELETE method by Primary Key" + "\n"
+		contentsstr = contentsstr + "  When you want to you own SQL to This Table, extend this class and create new Method." + "\n"
+		contentsstr = contentsstr + "  This class dependents DataStoreManage Library. Please add DataStoreManage JarFile and JDBC jar" + "\n"
+		contentsstr = contentsstr + " */" + "\n"
 		contentsstr = contentsstr + "public class " + daoClassName + " extends AbstractDataBaseAccessObject {" + "\n"
 		contentsstr = contentsstr + "\n"
 
 		# constractor
+		contentsstr = contentsstr + "\t/**" + "\n"
+		contentsstr = contentsstr + "\t  This is Constractor by DataBaseAccessParameter." + "\n"
+		contentsstr = contentsstr + "\t  @param dataBaseAccessParameter instance of DataBase Access Parameter" + "\n"
+		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {\n"
 		contentsstr = contentsstr + "\t\tsuper(dataBaseAccessParameter);\n"
 		contentsstr = contentsstr + "\t}\n"
 		contentsstr = contentsstr + "\n"
 		
+		contentsstr = contentsstr + "\t/**" + "\n"
+		contentsstr = contentsstr + "\t  This is Constractor by DataStore." + "\n"
+		contentsstr = contentsstr + "\t  @param dataBaseAccessParameter instance of DataStore" + "\n"
+		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataStore dataStore) throws DataStoreManagerException {\n"
 		contentsstr = contentsstr + "\t\tsuper(dataStore);\n"
 		contentsstr = contentsstr + "\t}\n"
 		contentsstr = contentsstr + "\n"
-
+		
 		# select
 		contentsstr = contentsstr + "\tpublic" + " " + recordClassName + " select(" + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
 		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"SELECT " + all_columns + " FROM " + tableName + " WHERE " + primarykey_columns_where_args + "\");\n"

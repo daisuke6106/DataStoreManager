@@ -59,7 +59,7 @@ class JavaClassFile(ClassFile):
 	def convertOracleColumnToJavaObject(self, column):
 		column_type = column.getColumnType()
 		if column_type in {"CHAR", "NCHAR", "VARCHAR2", "NVARCHAR2", "CLOB"}:
-			return "java.util.String"
+			return "java.lang.String"
 		elif column_type in {"NUMBER"}:
 			return "java.math.BigDecimal"
 		elif column_type in {"DATE"}:
@@ -118,6 +118,11 @@ class JavaRecordClass(JavaClassFile):
 		
 		# GETTER, SETTER定義
 		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\tpublic" + " boolean isSet" + column.getColumnname() + "(){" + "\n"
+			contentsstr = contentsstr + "\t\t" + "return this.isset_" + column.getColumnname() + ";\n"
+			contentsstr = contentsstr + "\t}\n"
+			contentsstr = contentsstr + "\n"
+
 			contentsstr = contentsstr + "\tpublic" + " void" + " set" + column.getColumnname() + " ("+ self.convertOracleColumnToJavaObject(column) + " value)" + "{" + "\n"
 			contentsstr = contentsstr + "\t\t" + "this.isset_" + column.getColumnname() + " = true;" + "\n"
 			contentsstr = contentsstr + "\t\t" + "this." + column.getColumnname() + " = value;\n"
@@ -135,18 +140,19 @@ class JavaRecordClass(JavaClassFile):
 		contentsstr = contentsstr + "\t\t" + recordClassName + " record = new " + recordClassName + "();" + "\n"
 		for column in self.table.getColumns():
 			contentsstr = contentsstr + "\t\t" + "record." + column.getColumnname() + " = dataBaseRecord." + self.convertOracleColumnToGetter(column) + "(\"" + column.getColumnname() + "\").get()" + ";\n"
+		contentsstr = contentsstr + "\t\treturn record;\n"
 		contentsstr = contentsstr + "\t}\n"
 		contentsstr = contentsstr + "\n"
 		
 		# toString
 		contentsstr = contentsstr + "\t@Override" + "\n"
 		contentsstr = contentsstr + "\tpublic" + " String toString() {" + "\n"
-		contentsstr = contentsstr + "\t\tStringBilder str = new StringBuilder();" + "\n"
-		contentsstr = contentsstr + "\t\tstr.add(""" + recordClassName + "="");" + "\n"
+		contentsstr = contentsstr + "\t\tStringBuilder str = new StringBuilder();" + "\n"
+		contentsstr = contentsstr + "\t\tstr.append(\"" + recordClassName + " [\");" + "\n"
 		for column in self.table.getColumns():
-			contentsstr = contentsstr + "\t\t" + "if ( this.isset_" + column.getColumnname() + ") {" + "\n" 
-			contentsstr = contentsstr + "\t\t\t" + "str.add(""" + column.getColumnname() + "="").add(this." + column.getColumnname() + ");\n"
-			contentsstr = contentsstr + "\t}\n"
+			contentsstr = contentsstr + "\t\t" + "if ( this.isset_" + column.getColumnname() + " ) " + "str.append(\"" + column.getColumnname() + "=\").append(this." + column.getColumnname() + ");\n" 
+		contentsstr = contentsstr + "\t\tstr.append(\"]\");" + "\n"
+		contentsstr = contentsstr + "\t\treturn str.toString();" + "\n"
 		contentsstr = contentsstr + "\t}\n"
 		contentsstr = contentsstr + "\n"
 		
@@ -217,19 +223,19 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "import jp.co.dk.datastoremanager.core.rdb.Sql;\n"
 		contentsstr = contentsstr + "\n"
 		contentsstr = contentsstr + "/**" + "\n"
-		contentsstr = contentsstr + "  This class is DataAccessObject to Oracle of [" + tableName + "] Table." + "\n"
-		contentsstr = contentsstr + "  This class is auto generate class." + "\n"
-		contentsstr = contentsstr + "  This class has SELECT method By Primary Key, INSERT method, UPDATE method by Primary Key, DELETE method by Primary Key" + "\n"
-		contentsstr = contentsstr + "  When you want to you own SQL to This Table, extend this class and create new Method." + "\n"
-		contentsstr = contentsstr + "  This class dependents DataStoreManage Library. Please add DataStoreManage JarFile and JDBC jar" + "\n"
+		contentsstr = contentsstr + " * This class is DataAccessObject to Oracle of [" + tableName + "] Table." + "\n"
+		contentsstr = contentsstr + " * This class is auto generate class." + "\n"
+		contentsstr = contentsstr + " * This class has SELECT method By Primary Key, INSERT method, UPDATE method by Primary Key, DELETE method by Primary Key" + "\n"
+		contentsstr = contentsstr + " * When you want to you own SQL to This Table, extend this class and create new Method." + "\n"
+		contentsstr = contentsstr + " * This class dependents DataStoreManage Library. Please add DataStoreManage JarFile and JDBC jar" + "\n"
 		contentsstr = contentsstr + " */" + "\n"
 		contentsstr = contentsstr + "public class " + daoClassName + " extends AbstractDataBaseAccessObject {" + "\n"
 		contentsstr = contentsstr + "\n"
 
 		# constractor
 		contentsstr = contentsstr + "\t/**" + "\n"
-		contentsstr = contentsstr + "\t  This is Constractor by DataBaseAccessParameter." + "\n"
-		contentsstr = contentsstr + "\t  @param dataBaseAccessParameter instance of DataBase Access Parameter" + "\n"
+		contentsstr = contentsstr + "\t * This is Constractor by DataBaseAccessParameter." + "\n"
+		contentsstr = contentsstr + "\t * @param dataBaseAccessParameter instance of DataBase Access Parameter" + "\n"
 		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {\n"
 		contentsstr = contentsstr + "\t\tsuper(dataBaseAccessParameter);\n"
@@ -237,8 +243,8 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "\n"
 		
 		contentsstr = contentsstr + "\t/**" + "\n"
-		contentsstr = contentsstr + "\t  This is Constractor by DataStore." + "\n"
-		contentsstr = contentsstr + "\t  @param dataBaseAccessParameter instance of DataStore" + "\n"
+		contentsstr = contentsstr + "\t * This is Constractor by DataStore." + "\n"
+		contentsstr = contentsstr + "\t * @param dataBaseAccessParameter instance of DataStore" + "\n"
 		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataStore dataStore) throws DataStoreManagerException {\n"
 		contentsstr = contentsstr + "\t\tsuper(dataStore);\n"
@@ -267,11 +273,11 @@ class JavaDaoClass(JavaClassFile):
 		# update
 		contentsstr = contentsstr + "\tpublic int update(" + recordClassName + " updateRecord, " + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
 		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"UPDATE " + tableName + "\");\n" 
-		contentsstr = contentsstr + "\t\tjava.uril.StringJoiner setToken = new java.uril.StringJoiner(\",\");\n"
+		contentsstr = contentsstr + "\t\tjava.util.StringJoiner setToken = new java.util.StringJoiner(\",\");\n"
 		for column in self.table.getColumns():
-			contentsstr = contentsstr + "\t\tif (updateRecord.isset_" + column.getColumnname() + ") {\n"
-			contentsstr = contentsstr + "\t\t\tsetToken.append(\"" + column.getColumnname() + " = ?\");\n"
-			contentsstr = contentsstr + "\t\t\tsql.setParameter(" + column.getColumnname() + ");\n"
+			contentsstr = contentsstr + "\t\tif (updateRecord.isSet" + column.getColumnname() + "()) {\n"
+			contentsstr = contentsstr + "\t\t\tsetToken.add(\"" + column.getColumnname() + " = ?\");\n"
+			contentsstr = contentsstr + "\t\t\tsql.setParameter(updateRecord.get" + column.getColumnname() + "());\n"
 			contentsstr = contentsstr + "\t\t}\n"
 		contentsstr = contentsstr + "\t\tsql.add(\" SET \");\n"
 		contentsstr = contentsstr + "\t\tsql.add(setToken.toString());\n"
@@ -320,4 +326,6 @@ if __name__ == "__main__":
 	
 	classFile = JavaDaoClass(package, dataStore.getTables()[0])
 	classFile.write(".")
+	# classFile = JavaRecordClass(package, dataStore.getTables()[0])
+	# classFile.write(".")
 	sys.exit()

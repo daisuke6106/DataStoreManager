@@ -6,6 +6,8 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/generate/java"/>
+	<classpathentry kind="src" path="src/generate/resources"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.26-bin.jar"/>
 	<classpathentry kind="lib" path="lib/message_1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-configuration-1.8.jar"/>

@@ -39,22 +39,27 @@ class JavaClassFile(ClassFile):
 		
 		package_path = package.replace(".","/")
 		
+		if (package_path[-1:]=="/"):
+			package_path = package_path[:-1]
+		
+		package_path = dirpath + "/" + package_path
+		
 		if os.path.exists(package_path) and os.path.isfile(package_path) :
-			print("package_path is file, exists already. package_path=[" + package_path + "]" )
+			print("[WARN]package_path is file, exists already. package_path=[" + package_path + "]" )
 			sys.exit(1) 
 		elif os.path.exists(package_path) and os.path.isdir(package_path) :
-			print("package_path is dir, exists already. package_path=[" + package_path + "]" )
+			print("[WARN]package_path is dir, exists already. package_path=[" + package_path + "]" )
 		else :
 			os.makedirs(package_path)
 		
-		os.chdir(package_path)
-		
-		filepath = dirpath + "/" + self.classname() + "." + self.extension()
+		filepath = package_path + "/" + self.classname() + "." + self.extension()
 		if os.path.exists(filepath) :
 			os.remove(filepath)
-		f = open(dirpath + "/" + self.classname() + "." + self.extension(), "w")
+		f = open(package_path + "/" + self.classname() + "." + self.extension(), "w")
 		f.write(self.contents())
 		f.close()
+		
+		print("[INFO]Complete create file, filepath=[" + filepath + "]" )
 	
 	def convertOracleColumnToJavaObject(self, column):
 		column_type = column.getColumnType()
@@ -310,22 +315,29 @@ if __name__ == "__main__":
 	output_path = sys.argv[4] # /tmp/dao_generate/
 	package     = sys.argv[5] # jp.co.dao_example
 	
+	# 最後の文字に/が含まれていた場合、除外する
+	if (output_path[-1:]=="/"):
+		output_path = output_path[:-1]
+	
 	if os.path.exists(output_path) and os.path.isfile(output_path) :
-		print("output_path is file, exists already. output_path=[" + output_path + "]" )
+		print("[WARN]output_path is file, exists already. output_path=[" + output_path + "]" )
 		sys.exit(1) 
 	elif os.path.exists(output_path) and os.path.isdir(output_path) :
-		print("output_path is dir, exists already. output_path=[" + output_path + "]" )
+		print("[WARN]output_path is dir, exists already. output_path=[" + output_path + "]" )
 	else :
 		os.makedirs(output_path)
 	
-	os.chdir(output_path)
-
 	param = DataBaseAccessParameter(DataStoreKind.ORACLE, DataBaseDriverConstants.ORACLE, config, user, password)
 	dataStore = OracleDataBaseDataStore(param)
 	dataStore.startTransaction()
 	
+	for 
+	
+	# DAOクラスを生成
 	classFile = JavaDaoClass(package, dataStore.getTables()[0])
-	classFile.write(".")
-	# classFile = JavaRecordClass(package, dataStore.getTables()[0])
-	# classFile.write(".")
+	classFile.write(output_path)
+	
+	# DAOレコードクラスを生成
+	classFile = JavaRecordClass(package, dataStore.getTables()[0])
+	classFile.write(output_path)
 	sys.exit()

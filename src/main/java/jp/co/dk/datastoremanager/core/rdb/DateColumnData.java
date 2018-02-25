@@ -5,7 +5,7 @@ import static jp.co.dk.datastoremanager.core.message.DataStoreManagerMessage.AN_
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Date;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;
 import jp.co.dk.datastoremanager.core.rdb.DateColumnData;

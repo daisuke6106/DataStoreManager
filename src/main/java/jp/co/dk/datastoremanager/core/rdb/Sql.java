@@ -1,9 +1,9 @@
 package jp.co.dk.datastoremanager.core.rdb;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import jp.co.dk.datastoremanager.core.exception.DataStoreManagerException;

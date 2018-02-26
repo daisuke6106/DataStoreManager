@@ -4,6 +4,11 @@ import os
 import shutil
 sys.path.append("datastoremanager_1.2.4_all.jar")
 
+# sysモジュールをリロードする
+reload(sys)
+# デフォルトの文字コードを変更する．
+sys.setdefaultencoding('utf-8')
+
 import jp.co.dk.datastoremanager.core.rdb.oracle.OracleDataBaseDataStore as OracleDataBaseDataStore
 import jp.co.dk.datastoremanager.core.rdb.DataBaseAccessParameter as DataBaseAccessParameter
 import jp.co.dk.datastoremanager.core.DataStoreKind as DataStoreKind
@@ -102,6 +107,7 @@ class JavaRecordClass(JavaClassFile):
 	
 	def contents(self):
 		
+		tableName       = self.table.toString()
 		recordClassName = self.classname()
 		
 		contentsstr = ""
@@ -111,29 +117,55 @@ class JavaRecordClass(JavaClassFile):
 		contentsstr = contentsstr + "import jp.co.dk.datastoremanager.core.rdb.DataBaseRecord;\n"
 		contentsstr = contentsstr + "import jp.co.dk.datastoremanager.core.rdb.DataConvertable;\n"
 		contentsstr = contentsstr + "\n"
+		contentsstr = contentsstr + "/**" + "\n"
+		contentsstr = contentsstr + " * This class is DataBaseRecord Object to Oracle of [" + tableName + "] Table." + "\n"
+		contentsstr = contentsstr + " * This class is auto generate class." + "\n"
+		contentsstr = contentsstr + " * " + "\n"
+		contentsstr = contentsstr + " * このクラスは [" + tableName + "] テーブルのレコードを表すクラスです。" + "\n"
+		contentsstr = contentsstr + " * このクラスは自動生成クラスです。" + "\n"
+		contentsstr = contentsstr + " */" + "\n"
 		contentsstr = contentsstr + "public class " + recordClassName + " implements DataConvertable {" + "\n"
 		contentsstr = contentsstr + "\n"
 		
 		# フィールド定義
 		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\t/** [" + column.getColumnname() + "] set flg. */" + "\n"
 			contentsstr = contentsstr + "\tprivate " + "boolean isset_" + column.getColumnname() + " = false;" + "\n"
 			contentsstr = contentsstr + "\n"
+			contentsstr = contentsstr + "\t/** [" + column.getColumnname() + "] Data. */" + "\n"
 			contentsstr = contentsstr + "\tprivate " + self.convertOracleColumnToJavaObject(column) + " " + column.getColumnname() + ";" + "\n"
 			contentsstr = contentsstr + "\n"
 		
 		# GETTER, SETTER定義
 		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\t/**" + "\n"
+			contentsstr = contentsstr + "\t * It is judged whether [" + column.getColumnname() + "] column has been set. " + "\n"
+			contentsstr = contentsstr + "\t * Use the setter to set true if a value has been set for this instance, false if it is not set." + "\n"
+			contentsstr = contentsstr + "\t * " + "\n"
+			contentsstr = contentsstr + "\t * [" + column.getColumnname() + "] カラムが設定済みか判定します。" + "\n"
+			contentsstr = contentsstr + "\t * セッターを使用し本インスタンスに値が設定されていた場合true、設定されていない場合falseを設定する。" + "\n"
+			contentsstr = contentsstr + "\t */" + "\n"
 			contentsstr = contentsstr + "\tpublic" + " boolean isSet" + column.getColumnname() + "(){" + "\n"
 			contentsstr = contentsstr + "\t\t" + "return this.isset_" + column.getColumnname() + ";\n"
 			contentsstr = contentsstr + "\t}\n"
 			contentsstr = contentsstr + "\n"
 
+			contentsstr = contentsstr + "\t/**" + "\n"
+			contentsstr = contentsstr + "\t * Set a value in the [" + column.getColumnname() + "] column." + "\n"
+			contentsstr = contentsstr + "\t * " + "\n"
+			contentsstr = contentsstr + "\t * [" + column.getColumnname() + "] カラムに値を設定する。" + "\n"
+			contentsstr = contentsstr + "\t */" + "\n"
 			contentsstr = contentsstr + "\tpublic" + " void" + " set" + column.getColumnname() + " ("+ self.convertOracleColumnToJavaObject(column) + " value)" + "{" + "\n"
 			contentsstr = contentsstr + "\t\t" + "this.isset_" + column.getColumnname() + " = true;" + "\n"
 			contentsstr = contentsstr + "\t\t" + "this." + column.getColumnname() + " = value;\n"
 			contentsstr = contentsstr + "\t}\n"
 			contentsstr = contentsstr + "\n"
-		
+
+			contentsstr = contentsstr + "\t/**" + "\n"
+			contentsstr = contentsstr + "\t * Gets the value of the [" + column.getColumnname() + "] column." + "\n"
+			contentsstr = contentsstr + "\t * " + "\n"
+			contentsstr = contentsstr + "\t * [" + column.getColumnname() + "] カラムの値を取得します。" + "\n"
+			contentsstr = contentsstr + "\t */" + "\n"
 			contentsstr = contentsstr + "\tpublic" + " " + self.convertOracleColumnToJavaObject(column) + " get" + column.getColumnname() + "(){" + "\n"
 			contentsstr = contentsstr + "\t\t" + "return this." + column.getColumnname() + ";\n"
 			contentsstr = contentsstr + "\t}\n"
@@ -331,8 +363,6 @@ if __name__ == "__main__":
 	dataStore = OracleDataBaseDataStore(param)
 	dataStore.startTransaction()
 	
-	for 
-	
 	# DAOクラスを生成
 	classFile = JavaDaoClass(package, dataStore.getTables()[0])
 	classFile.write(output_path)
@@ -340,4 +370,7 @@ if __name__ == "__main__":
 	# DAOレコードクラスを生成
 	classFile = JavaRecordClass(package, dataStore.getTables()[0])
 	classFile.write(output_path)
+	
+	dataStore.finishTransaction()
+	
 	sys.exit()

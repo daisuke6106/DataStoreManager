@@ -20,7 +20,10 @@ public abstract class TableMetaData {
 	protected String schemaName;
 	
 	protected String tableName;
-
+	
+	/** カラム情報一覧のキャッシュ */
+	protected List<ColumnMetaData> columnMetaDataList;
+	
 	/** プライマリーキー情報一覧のキャッシュ */
 	protected List<PrimaryKeyMetaData> primaryKeyMetaDataList;
 	
@@ -31,15 +34,17 @@ public abstract class TableMetaData {
 	}
 
 	public List<ColumnMetaData> getColumns() throws DataStoreManagerException {
-		try {
-			List<ColumnMetaData> columnMetaDataList = new ArrayList<>();
-			DatabaseMetaData dbmd = this.dataBaseDataStore.transaction.connection.getMetaData();
-			ResultSet columnsResultSet    = dbmd.getColumns(null, this.schemaName, this.tableName, "%");
-			for (int i=0; columnsResultSet.next(); i++) columnMetaDataList.add(this.createColumnMetaData(this, columnsResultSet, i));
-			return columnMetaDataList;
-		} catch (SQLException e) {
-			throw new DataStoreManagerException(FAILED_TO_ACQUIRE_COLUMN_INFO, e);
+		if (this.columnMetaDataList == null) {
+			try {
+				this.columnMetaDataList = new ArrayList<>();
+				DatabaseMetaData dbmd = this.dataBaseDataStore.transaction.connection.getMetaData();
+				ResultSet columnsResultSet    = dbmd.getColumns(null, this.schemaName, this.tableName, "%");
+				for (int i=0; columnsResultSet.next(); i++) this.columnMetaDataList.add(this.createColumnMetaData(this, columnsResultSet, i));
+			} catch (SQLException e) {
+				throw new DataStoreManagerException(FAILED_TO_ACQUIRE_COLUMN_INFO, e);
+			}
 		}
+		return this.columnMetaDataList;
 	}
 	
 	/**

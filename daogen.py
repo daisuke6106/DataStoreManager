@@ -278,6 +278,8 @@ class JavaDaoClass(JavaClassFile):
 		# constractor
 		contentsstr = contentsstr + "\t/**" + "\n"
 		contentsstr = contentsstr + "\t * This is Constractor by DataBaseAccessParameter." + "\n"
+		contentsstr = contentsstr + "\t * データベースアクセスパラメータを基にインスタンスを生成します。" + "\n"
+		contentsstr = contentsstr + "\t * " + "\n"
 		contentsstr = contentsstr + "\t * @param dataBaseAccessParameter instance of DataBase Access Parameter" + "\n"
 		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataBaseAccessParameter dataBaseAccessParameter) throws DataStoreManagerException {\n"
@@ -287,6 +289,8 @@ class JavaDaoClass(JavaClassFile):
 		
 		contentsstr = contentsstr + "\t/**" + "\n"
 		contentsstr = contentsstr + "\t * This is Constractor by DataStore." + "\n"
+		contentsstr = contentsstr + "\t * データストアへのインスタンスを基にインスタンスを生成します。" + "\n"
+		contentsstr = contentsstr + "\t * " + "\n"
 		contentsstr = contentsstr + "\t * @param dataBaseAccessParameter instance of DataStore" + "\n"
 		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic " + daoClassName + "(DataStore dataStore) throws DataStoreManagerException {\n"
@@ -295,6 +299,14 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "\n"
 		
 		# select
+		contentsstr = contentsstr + "\t/**" + "\n"
+		contentsstr = contentsstr + "\t * Select Record by primary key." + "\n"
+		contentsstr = contentsstr + "\t * プライマリキーを基にレコードを取得します。" + "\n"
+		contentsstr = contentsstr + "\t * " + "\n"
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				contentsstr = contentsstr + "\t * @param " + column.getColumnname() + " " + column.getColumnname() + "\n"
+		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic" + " " + recordClassName + " select(" + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
 		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"SELECT " + all_columns + " FROM " + tableName + " WHERE " + primarykey_columns_where_args + "\");\n"
 		for column in self.table.getColumns():
@@ -305,6 +317,13 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "\n"
 		
 		# insert
+		contentsstr = contentsstr + "\t/**" + "\n"
+		contentsstr = contentsstr + "\t * Insert Record by Parameter." + "\n"
+		contentsstr = contentsstr + "\t * 引数に指定されたパラメータを基にレコードを登録します。" + "\n"
+		contentsstr = contentsstr + "\t * " + "\n"
+		for column in self.table.getColumns():
+			contentsstr = contentsstr + "\t * @param " + column.getColumnname() + " " + column.getColumnname() + "\n"
+		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic void insert(" + all_columns_columns_java_args + ") throws DataStoreManagerException {" + "\n"
 		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"INSERT INTO " + tableName + "(" + all_columns + ") VALUES (" + all_columns_question + ")\");\n"
 		for column in self.table.getColumns():
@@ -314,6 +333,14 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "\n"
 		
 		# update
+		contentsstr = contentsstr + "\t/**" + "\n"
+		contentsstr = contentsstr + "\t * Update Record by Primary Key." + "\n"
+		contentsstr = contentsstr + "\t * プライマリキーを基にレコードを更新します。" + "\n"
+		contentsstr = contentsstr + "\t * " + "\n"
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				contentsstr = contentsstr + "\t * @param " + column.getColumnname() + " " + column.getColumnname() + "\n"
+		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic int update(" + recordClassName + " updateRecord, " + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
 		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"UPDATE " + tableName + "\");\n" 
 		contentsstr = contentsstr + "\t\tjava.util.StringJoiner setToken = new java.util.StringJoiner(\",\");\n"
@@ -333,6 +360,14 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "\n"
 		
 		# delete
+		contentsstr = contentsstr + "\t/**" + "\n"
+		contentsstr = contentsstr + "\t * Delete Record by Primary Key." + "\n"
+		contentsstr = contentsstr + "\t * プライマリキーを基にレコードを削除します。" + "\n"
+		contentsstr = contentsstr + "\t * " + "\n"
+		for column in self.table.getColumns():
+			if column.isPrimaryKey() :
+				contentsstr = contentsstr + "\t * @param " + column.getColumnname() + " " + column.getColumnname() + "\n"
+		contentsstr = contentsstr + "\t */" + "\n"
 		contentsstr = contentsstr + "\tpublic int delete(" + primarykey_columns_java_args + ") throws DataStoreManagerException {" + "\n"
 		contentsstr = contentsstr + "\t\tSql sql = new Sql(\"DELETE FROM " + tableName + " WHERE " + primarykey_columns_where_args + "\");\n"
 		for column in self.table.getColumns():
@@ -369,13 +404,14 @@ if __name__ == "__main__":
 	dataStore = OracleDataBaseDataStore(param)
 	dataStore.startTransaction()
 	
-	# DAOクラスを生成
-	classFile = JavaDaoClass(package, dataStore.getTables()[0])
-	classFile.write(output_path)
-	
-	# DAOレコードクラスを生成
-	classFile = JavaRecordClass(package, dataStore.getTables()[0])
-	classFile.write(output_path)
+	for table in dataStore.getTables():
+		# DAOクラスを生成
+		classFile = JavaDaoClass(package, table)
+		classFile.write(output_path)
+		
+		# DAOレコードクラスを生成
+		classFile = JavaRecordClass(package, table)
+		classFile.write(output_path)
 	
 	dataStore.finishTransaction()
 	

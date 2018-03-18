@@ -2,7 +2,9 @@
 import sys
 import os
 import shutil
-sys.path.append("datastoremanager_1.2.4_all.jar")
+import argparse
+
+sys.path.append("datastoremanager_1.2.4a_all.jar")
 
 # sysモジュールをリロードする
 reload(sys)
@@ -380,13 +382,88 @@ class JavaDaoClass(JavaClassFile):
 		contentsstr = contentsstr + "}" + "\n"
 		return contentsstr
 
+
+#====================================================================================================
+# 引数構成設定
+#====================================================================================================
+parser = argparse.ArgumentParser(
+    prog='argparseTest.py',             # プログラム名
+    usage='Demonstration of argparser', # プログラムの利用方法
+    description='このスクリプトは',      # プログラムの利用方法
+    epilog='end',                       # 引数のヘルプの後で表示
+    add_help=True,                      # -h/–help オプションの追加
+    )
+
+# URL指定
+parser.add_argument('-url', '--url',  # 引数名
+    required=True,                    # 必須指定
+    action='store',                   # コマンドライン引数にアクションを割り当て
+    nargs=1,                          # 引数の数
+    const=None,                       # add_argument() の const 引数は、コマンドライン引数から読み込まれないけれども ArgumentParser のいくつかのアクションで必要とされる値のために使われます。
+    default=None,                     # すべてのオプション引数といくつかの位置引数はコマンドライン上で省略されることがあります。
+    type=str,                         # コマンドライン引数の型指定
+    choices=None,                     # コマンドライン引数をいくつかの選択肢の中から選ばせたい場合があります。
+    help='DB接続時URL:jdbc:oracle:thin:@192.168.1.151:1521:XE', 
+    metavar=None)
+
+# ユーザ指定
+parser.add_argument('-u', '--user',   # 引数名
+    required=True,                    # 必須指定
+    action='store',                   # コマンドライン引数にアクションを割り当て
+    nargs=1,                          # 引数の数
+    const=None,                       # add_argument() の const 引数は、コマンドライン引数から読み込まれないけれども ArgumentParser のいくつかのアクションで必要とされる値のために使われます。
+    default=None,                     # すべてのオプション引数といくつかの位置引数はコマンドライン上で省略されることがあります。
+    type=str,                         # コマンドライン引数の型指定
+    choices=None,                     # コマンドライン引数をいくつかの選択肢の中から選ばせたい場合があります。
+    help='DB接続時ユーザID', 
+    metavar=None)
+
+# パスワード指定
+parser.add_argument('-p', '--password',  # 引数名
+    required=True,                       # 必須指定
+    action='store',                      # コマンドライン引数にアクションを割り当て
+    nargs=1,                             # 引数の数
+    const=None,                          # add_argument() の const 引数は、コマンドライン引数から読み込まれないけれども ArgumentParser のいくつかのアクションで必要とされる値のために使われます。
+    default=None,                        # すべてのオプション引数といくつかの位置引数はコマンドライン上で省略されることがあります。
+    type=str,                            # コマンドライン引数の型指定
+    choices=None,                        # コマンドライン引数をいくつかの選択肢の中から選ばせたい場合があります。
+    help='DB接続時パスワード', 
+    metavar=None)
+
+parser.add_argument('-o', '--output_path',  # 引数名
+    required=True,                          # 必須指定
+    action='store',                         # コマンドライン引数にアクションを割り当て
+    nargs=1,                                # 引数の数
+    const=None,                             # add_argument() の const 引数は、コマンドライン引数から読み込まれないけれども ArgumentParser のいくつかのアクションで必要とされる値のために使われます。
+    default=None,                           # すべてのオプション引数といくつかの位置引数はコマンドライン上で省略されることがあります。
+    type=str,                               # コマンドライン引数の型指定
+    choices=None,                           # コマンドライン引数をいくつかの選択肢の中から選ばせたい場合があります。
+    help='出力先ディレクトリ', 
+    metavar=None)
+
+parser.add_argument('-pkg', '--package',      # 引数名
+    required=True,                          # 必須指定
+    action='store',                         # コマンドライン引数にアクションを割り当て
+    nargs=1,                                # 引数の数
+    const=None,                             # add_argument() の const 引数は、コマンドライン引数から読み込まれないけれども ArgumentParser のいくつかのアクションで必要とされる値のために使われます。
+    default=None,                           # すべてのオプション引数といくつかの位置引数はコマンドライン上で省略されることがあります。
+    type=str,                               # コマンドライン引数の型指定
+    choices=None,                           # コマンドライン引数をいくつかの選択肢の中から選ばせたい場合があります。
+    help='パッケージ', 
+    metavar=None)
+
+#====================================================================================================
+# メイン
+#====================================================================================================
 if __name__ == "__main__":
 	
-	config      = sys.argv[1] # jdbc:oracle:thin:@192.168.1.151:1521:XE
-	user        = sys.argv[2] # usr01
-	password    = sys.argv[3] # 12345
-	output_path = sys.argv[4] # /tmp/dao_generate/
-	package     = sys.argv[5] # jp.co.dao_example
+	args = parser.parse_args()
+	
+	config      = args.url[0]         # jdbc:oracle:thin:@192.168.1.151:1521:XE
+	user        = args.user[0]        # usr01
+	password    = args.password[0]    # 12345
+	output_path = args.output_path[0] # /tmp/dao_generate/
+	package     = args.package[0]     # jp.co.dao_example
 	
 	# 最後の文字に/が含まれていた場合、除外する
 	if (output_path[-1:]=="/"):

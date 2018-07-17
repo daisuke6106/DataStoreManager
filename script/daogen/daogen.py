@@ -18,11 +18,25 @@ import jp.co.dk.datastoremanager.core.DataBaseDriverConstants as DataBaseDriverC
 import jp.co.dk.datastoremanager.core.rdb.TableMetaData as TableMetaData
 
 
+"""
+クラスファイル作成基底クラス
+"""
 class ClassFile:
 	
+	"""
+	クラスファイル内容を返却する。
+	"""
 	def contents(self):
 		pass
 	
+	"""
+	クラスファイルを出力する。
+	
+	Parameters
+	----------
+	dirpath : string
+	
+	"""
 	def write(self, dirpath):
 		filepath = dirpath + "/" + self.classname() + "." + self.extension()
 		if os.path.exists(filepath) :
@@ -31,6 +45,14 @@ class ClassFile:
 		f.write(self.contents())
 		f.close()
 	
+	"""
+	クラス名を返却します。
+	
+	Reterns
+	----------
+	dirpath : string
+	
+	"""
 	def classname(self):
 		return ""
 	
@@ -441,7 +463,7 @@ parser.add_argument('-o', '--output_path',  # 引数名
     help='出力先ディレクトリ', 
     metavar=None)
 
-parser.add_argument('-pkg', '--package',      # 引数名
+parser.add_argument('-pkg', '--package',    # 引数名
     required=True,                          # 必須指定
     action='store',                         # コマンドライン引数にアクションを割り当て
     nargs=1,                                # 引数の数

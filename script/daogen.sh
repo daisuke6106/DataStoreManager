@@ -1,8 +1,21 @@
 #!/bin/sh
-CURRENT=$(cd $(dirname $0) && pwd)
-MAIN_JAR="${CURRENT}/../datastoremanager_1.2.4.jar"
-LIB_JAR="${CURRENT}/../lib/*"
-MESSAGE_DIR="${CURRENT}/../messages"
-PROPERTY_DIR="${CURRENT}/../properties"
-java -classpath "${MAIN_JAR}:${LIB_JAR}:${MESSAGE_DIR}:${PROPERTY_DIR}" jp.co.dk.datastoremanager.command.daogen.CreateDataAccessObjectControler $*
+# ====================================================================================================
+# データベース環境情報読み込み
+# ====================================================================================================
+. env/datastore_env.sh
 
+# ====================================================================================================
+# プロジェクト情報読み込み
+# ====================================================================================================
+. env/project_env.sh
+
+# ====================================================================================================
+# スクリプト実行
+# ====================================================================================================
+jython \
+-Dlogger_property_file=${LOG_PROPERTY} \
+daogen.py \
+--url ${DATABASE_URL} \
+--user ${USER} \
+--password ${PASSWORD} \
+--output_path ${DAOGEN_OUTPUT_PATH} --package ${DAOGEN_PACKAGE}

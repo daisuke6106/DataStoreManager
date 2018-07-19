@@ -4,7 +4,7 @@ import os
 import shutil
 import argparse
 
-sys.path.append("datastoremanager_1.2.4a_all.jar")
+sys.path.append("../datastoremanager_1.2.4a_all.jar")
 
 # sysモジュールをリロードする
 reload(sys)

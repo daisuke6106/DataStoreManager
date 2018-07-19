@@ -14,7 +14,7 @@
 # ====================================================================================================
 jython \
 -Dlogger_property_file=${LOG_PROPERTY} \
-daogen.py \
+daogen/daogen.py \
 --url ${DATABASE_URL} \
 --user ${USER} \
 --password ${PASSWORD} \

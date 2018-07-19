@@ -12,9 +12,16 @@
 # ====================================================================================================
 # スクリプト実行
 # ====================================================================================================
-jython \
+CURRENT=$(cd $(dirname $0) && pwd)
+MAIN_JAR="${CURRENT}/../datastoremanager_1.2.4_all.jar"
+MESSAGE_DIR="${CURRENT}/../messages"
+PROPERTY_DIR="${CURRENT}/../properties"
+LOG_PROPERTY="${CURRENT}/../properties/Logger.properties"
+java \
+-Dpython.path="${MAIN_JAR}:${LIB_JAR}:${MESSAGE_DIR}:${PROPERTY_DIR}" \
 -Dlogger_property_file=${LOG_PROPERTY} \
-daogen/daogen.py \
+-jar ${JYTHON_HOME}/jython.jar \
+./daogen/daogen.py \
 --url ${DATABASE_URL} \
 --user ${USER} \
 --password ${PASSWORD} \

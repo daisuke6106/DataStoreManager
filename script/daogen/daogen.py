@@ -4,8 +4,6 @@ import os
 import shutil
 import argparse
 
-sys.path.append("../datastoremanager_1.2.4a_all.jar")
-
 # sysモジュールをリロードする
 reload(sys)
 # デフォルトの文字コードを変更する．
